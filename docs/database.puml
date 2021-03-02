@@ -1,0 +1,53 @@
+@startuml erdiagram
+
+entity "item" {
+    + id [PK]
+    ==
+    description
+}
+
+entity "meta_key" {
+    + id [PK]
+    ==
+    name
+}
+
+entity "meta" {
+    + id [PK]
+    ==
+    # meta_key_id [FK(meta_key.id)]
+    value
+}
+
+entity "tag" {
+    + id [PK]
+    ==
+    # parent_tag_id [FK(tag.id)]
+    level
+    name
+}
+
+entity "item_meta" {
+    + id [PK]
+    ==
+    # item_id [FK(item.id)]
+    # meta_id [FK(meta.id)]
+}
+
+entity "item_tag" {
+    + id [PK]
+    ==
+    # item_id [FK(item.id)]
+    # tag_id [FK(tag.id)]
+}
+
+item --o{ item_tag
+item --o{ item_meta
+item_tag ||--|| tag
+item_meta ||--|| meta
+meta ||--|| meta_key
+
+' tag --o{ item_tag
+
+
+@enduml
