@@ -1,8 +1,9 @@
-@startuml erdiagram
+@startuml data_tag_manager
 
 entity "item" {
     + id [PK]
     ==
+    name
     description
 }
 
@@ -10,13 +11,6 @@ entity "meta_key" {
     + id [PK]
     ==
     name
-}
-
-entity "meta" {
-    + id [PK]
-    ==
-    # meta_key_id [FK(meta_key.id)]
-    value
 }
 
 entity "tag" {
@@ -32,6 +26,7 @@ entity "item_meta" {
     ==
     # item_id [FK(item.id)]
     # meta_id [FK(meta.id)]
+    value
 }
 
 entity "item_tag" {
@@ -41,13 +36,55 @@ entity "item_tag" {
     # tag_id [FK(tag.id)]
 }
 
+entity "item_template" {
+    + id [PK]
+    ==
+    name
+}
+
+entity "item_template_meta_key" {
+    + id [PK]
+    ==
+    # item_template_id
+    # meta_key_id
+}
+
 item --o{ item_tag
 item --o{ item_meta
 item_tag ||--|| tag
-item_meta ||--|| meta
-meta ||--|| meta_key
+item_meta ||--|| meta_key
+item_template --o{ item_template_meta_key
 
-' tag --o{ item_tag
+' 案2
+' entity "item_1" {
+'     + id [PK]
+'     ==
+'     # item_template_id 
+' }
+' entity "item_template" {
+'     + id [PK]
+'     ==
+'     name
+' }
+' entity "item_template_meta_key" {
+'     + id [PK]
+'     ==
+'     # item_template_id
+'     # meta_key_id
+
+' }
+' entity "meta_key_2" {
+'     + id [PK]
+'     ==
+'     name
+' }
+
+' item_1 --o{ item_template
+' item_template --o{ item_template_meta_key
+' item_template_meta_key --o{ meta_key_2
+
+
+
 
 
 @enduml

@@ -7,7 +7,7 @@
 #
 # Host: 127.0.0.1 (MySQL 5.7.31)
 # Database: data_tag_manager
-# Generation Time: 2021-03-02 10:41:58 +0000
+# Generation Time: 2021-03-03 06:12:19 +0000
 # ************************************************************
 
 
@@ -28,7 +28,8 @@ DROP TABLE IF EXISTS `item`;
 
 CREATE TABLE `item` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `description` varchar(256) COLLATE utf8_unicode_ci DEFAULT '',
+  `name` varchar(4096) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `description` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -41,7 +42,9 @@ DROP TABLE IF EXISTS `item_meta`;
 
 CREATE TABLE `item_meta` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(256) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  `item_id` int(11) DEFAULT NULL,
+  `meta_id` int(11) DEFAULT NULL,
+  `value` varchar(4096) COLLATE utf8_unicode_ci DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -61,15 +64,28 @@ CREATE TABLE `item_tag` (
 
 
 
-# Dump of table meta
+# Dump of table item_template
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `meta`;
+DROP TABLE IF EXISTS `item_template`;
 
-CREATE TABLE `meta` (
+CREATE TABLE `item_template` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(4096) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+# Dump of table item_template_meta_key
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `item_template_meta_key`;
+
+CREATE TABLE `item_template_meta_key` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `item_template_id` int(11) NOT NULL,
   `meta_key_id` int(11) NOT NULL,
-  `value` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -97,7 +113,7 @@ CREATE TABLE `tag` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `parent_tag_id` int(11) NOT NULL,
   `level` int(11) NOT NULL DEFAULT '1',
-  `name` varchar(256) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `name` varchar(4096) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
