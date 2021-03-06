@@ -25,7 +25,7 @@ entity "item_meta" {
     + id [PK]
     ==
     # item_id [FK(item.id)]
-    # meta_id [FK(meta.id)]
+    # meta_key_id [FK(meta.id)]
     value
 }
 
@@ -54,6 +54,7 @@ item --o{ item_meta
 item_tag ||--|| tag
 item_meta ||--|| meta_key
 item_template --o{ item_template_meta_key
+item_template_meta_key  ||--|| meta_key
 
 ' 案2
 ' entity "item_1" {

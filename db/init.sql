@@ -43,7 +43,7 @@ DROP TABLE IF EXISTS `item_meta`;
 CREATE TABLE `item_meta` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(11) DEFAULT NULL,
-  `meta_id` int(11) DEFAULT NULL,
+  `meta_key_id` int(11) DEFAULT NULL,
   `value` varchar(4096) COLLATE utf8_unicode_ci DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
