@@ -1,0 +1,67 @@
+type Item {
+    id:ID!
+    name:String!
+    description:String
+    metas:[Meta]
+    tags:[Tag]
+}
+
+type MetaKey {
+    id:ID!
+    name:String!
+}
+
+type Tag {
+    id: ID!
+    parent: Tag
+    level:Int!
+    name:String!
+}
+
+type Meta {
+    id: ID!
+    metaKey: MetaKey!
+    value:String!
+}
+
+type ItemTemplate {
+    id: ID!
+    name: String!
+    metaKeys: [MetaKey]
+}
+
+
+type Query {
+    items(ids:[ID]):[Item]
+    itemTemplates:[ItemTemplate]
+}
+
+
+input MutationMetaKey {
+    id:ID
+    name:String!
+}
+input MutationMeta {
+    metaKey: MutationMetaKey
+    value: String!
+}
+input MutationTag {
+    id: ID
+    parent: MutationTag
+    level:Int!
+    name:String!
+}
+input NewItem {
+    name: String!
+    description: String
+    metas: [MutationMeta]
+    tags: [MutationTag]
+}
+type Mutation {
+    addItem(item:NewItem!):ID!
+}
+
+
+schema {
+    query: Query
+}
