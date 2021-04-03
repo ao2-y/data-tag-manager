@@ -13,6 +13,10 @@ func (r *mutationResolver) AddItem(ctx context.Context, input *model.AddItemInpu
 	panic(fmt.Errorf("not implemented"))
 }
 
+func (r *mutationResolver) AddItemWithMetaAndTag(ctx context.Context, input *model.AddItemWithMetaAndTagInput) (*model.AddItemPayload, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 func (r *mutationResolver) RemoveItem(ctx context.Context, input *model.RemoveItemInput) (*model.RemoveItemPayload, error) {
 	panic(fmt.Errorf("not implemented"))
 }

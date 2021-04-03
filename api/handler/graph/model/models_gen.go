@@ -8,6 +8,8 @@ type Node interface {
 
 type AddItemInput struct {
 	ClientMutationID *string `json:"clientMutationId"`
+	Name             string  `json:"name"`
+	Description      *string `json:"description"`
 }
 
 type AddItemPayload struct {
@@ -24,6 +26,23 @@ type AddItemTemplateInput struct {
 type AddItemTemplatePayload struct {
 	ClientMutationID *string       `json:"clientMutationId"`
 	ItemTemplate     *ItemTemplate `json:"itemTemplate"`
+}
+
+type AddItemWithMetaAndTagInput struct {
+	ClientMutationID *string                 `json:"clientMutationId"`
+	Name             string                  `json:"name"`
+	Description      *string                 `json:"description"`
+	Metas            []*AddItemWithMetaInput `json:"metas"`
+	Tags             []*AddItemWithTagInput  `json:"tags"`
+}
+
+type AddItemWithMetaInput struct {
+	MetaKeyID string `json:"metaKeyId"`
+	Value     string `json:"value"`
+}
+
+type AddItemWithTagInput struct {
+	TagID string `json:"tagId"`
 }
 
 type AddMetaKeyInput struct {
