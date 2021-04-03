@@ -1,0 +1,61 @@
+type Tag implements Node {
+    id: ID!
+    parent: Tag
+    name: String!
+}
+
+extend type Query {
+    tags:[Tag]
+}
+
+extend type Mutation {
+    # タグ自体の操作
+    addTag(input:AddTagInput):AddTagPaylod
+    removeTag(input:RemoveTagInput):RemoveTagPayload
+    # Itemへの操作
+    addTagToItem(input:AddTagToItemInput):AddTagToItemPayload
+    removeTagToItem(input:RemoveTagToItemInput):RemoveTagToItemPayload
+}
+
+input AddTagInput {
+    clientMutationId: String
+    parentId: ID
+    name: String!
+}
+
+type AddTagPaylod {
+    clientMutationId: String
+    tag: Tag
+}
+
+input RemoveTagInput {
+    clientMutaionId: String
+    id: ID!
+}
+
+type RemoveTagPayload {
+    clientMutationId: String
+    tag: Tag
+}
+
+input AddTagToItemInput {
+    clientMutationId: String
+    id: ID!
+    itemId: ID!
+}
+
+type AddTagToItemPayload {
+    clientMutationId: String
+    item: Item
+}
+
+input RemoveTagToItemInput {
+    clientMutationId: String
+    id: ID!
+    itemId: ID!
+}
+
+type RemoveTagToItemPayload {
+    clientMutationId: String
+    item: Item
+}

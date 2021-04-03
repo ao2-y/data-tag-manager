@@ -2,6 +2,74 @@
 
 package model
 
+type Node interface {
+	IsNode()
+}
+
+type AddItemInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+}
+
+type AddItemPayload struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	Item             *Item   `json:"item"`
+}
+
+type AddItemTemplateInput struct {
+	ClientMutationID *string  `json:"clientMutationId"`
+	Name             string   `json:"name"`
+	MetaKeyIds       []string `json:"metaKeyIds"`
+}
+
+type AddItemTemplatePayload struct {
+	ClientMutationID *string       `json:"clientMutationId"`
+	ItemTemplate     *ItemTemplate `json:"itemTemplate"`
+}
+
+type AddMetaKeyInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	Name             string  `json:"name"`
+}
+
+type AddMetaKeyPayload struct {
+	ClientMutationID *string  `json:"clientMutationId"`
+	MetaKey          *MetaKey `json:"metaKey"`
+}
+
+type AddMetaToItemInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	MetaKeyID        string  `json:"metaKeyId"`
+	Value            string  `json:"value"`
+	ItemID           string  `json:"itemId"`
+}
+
+type AddMetaToItemPayload struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	Item             *Item   `json:"item"`
+}
+
+type AddTagInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	ParentID         *string `json:"parentId"`
+	Name             string  `json:"name"`
+}
+
+type AddTagPaylod struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	Tag              *Tag    `json:"tag"`
+}
+
+type AddTagToItemInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	ID               string  `json:"id"`
+	ItemID           string  `json:"itemId"`
+}
+
+type AddTagToItemPayload struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	Item             *Item   `json:"item"`
+}
+
 type Item struct {
 	ID          string  `json:"id"`
 	Name        string  `json:"name"`
@@ -10,11 +78,25 @@ type Item struct {
 	Tags        []*Tag  `json:"tags"`
 }
 
+func (Item) IsNode() {}
+
+type ItemConnection struct {
+	PageInfo *PageInfo   `json:"pageInfo"`
+	Edges    []*ItemEdge `json:"edges"`
+}
+
+type ItemEdge struct {
+	Cursor string `json:"cursor"`
+	Node   *Item  `json:"node"`
+}
+
 type ItemTemplate struct {
 	ID       string     `json:"id"`
 	Name     string     `json:"name"`
 	MetaKeys []*MetaKey `json:"metaKeys"`
 }
+
+func (ItemTemplate) IsNode() {}
 
 type Meta struct {
 	ID      string   `json:"id"`
@@ -22,38 +104,113 @@ type Meta struct {
 	Value   string   `json:"value"`
 }
 
+func (Meta) IsNode() {}
+
 type MetaKey struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
-type MutationMeta struct {
-	MetaKey *MutationMetaKey `json:"metaKey"`
-	Value   string           `json:"value"`
+func (MetaKey) IsNode() {}
+
+type NoopInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
 }
 
-type MutationMetaKey struct {
-	ID   *string `json:"id"`
-	Name string  `json:"name"`
+type NoopPayload struct {
+	ClientMutationID *string `json:"clientMutationId"`
 }
 
-type MutationTag struct {
-	ID     *string      `json:"id"`
-	Parent *MutationTag `json:"parent"`
-	Level  int          `json:"level"`
-	Name   string       `json:"name"`
+type PageInfo struct {
+	HasPreviousPage bool    `json:"hasPreviousPage"`
+	StartCursor     *string `json:"startCursor"`
+	HasNextPage     bool    `json:"hasNextPage"`
+	EndCursor       *string `json:"endCursor"`
 }
 
-type NewItem struct {
-	Name        string          `json:"name"`
-	Description *string         `json:"description"`
-	Metas       []*MutationMeta `json:"metas"`
-	Tags        []*MutationTag  `json:"tags"`
+type RemoveItemInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	ID               string  `json:"id"`
+}
+
+type RemoveItemPayload struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	Item             *Item   `json:"item"`
+}
+
+type RemoveMetaKeyInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	ID               string  `json:"id"`
+}
+
+type RemoveMetaKeyPayload struct {
+	ClientMutationID *string  `json:"clientMutationId"`
+	MetaKey          *MetaKey `json:"metaKey"`
+}
+
+type RemoveMetaToItemInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	MetaID           string  `json:"metaId"`
+}
+
+type RemoveMetaToItemPayload struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	Item             *Item   `json:"item"`
+}
+
+type RemoveTagInput struct {
+	ClientMutaionID *string `json:"clientMutaionId"`
+	ID              string  `json:"id"`
+}
+
+type RemoveTagPayload struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	Tag              *Tag    `json:"tag"`
+}
+
+type RemoveTagToItemInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	ID               string  `json:"id"`
+	ItemID           string  `json:"itemId"`
+}
+
+type RemoveTagToItemPayload struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	Item             *Item   `json:"item"`
 }
 
 type Tag struct {
 	ID     string `json:"id"`
 	Parent *Tag   `json:"parent"`
-	Level  int    `json:"level"`
 	Name   string `json:"name"`
+}
+
+func (Tag) IsNode() {}
+
+type UpdateItemTemplateMetaKeysInput struct {
+	ClientMutationID *string  `json:"clientMutationId"`
+	ItemTemplateID   string   `json:"itemTemplateId"`
+	MetaKeyIds       []string `json:"metaKeyIds"`
+}
+
+type UpdateItemTemplateNameInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	ItemTemplateID   string  `json:"itemTemplateId"`
+	Name             *string `json:"name"`
+}
+
+type UpdateItemTemplatePayload struct {
+	ClientMutationID *string       `json:"clientMutationId"`
+	ItemTemplate     *ItemTemplate `json:"itemTemplate"`
+}
+
+type UpdateMetaKeyInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	ID               string  `json:"id"`
+	Name             string  `json:"name"`
+}
+
+type UpdateMetaKeyPayload struct {
+	ClientMutationID *string  `json:"clientMutationId"`
+	MetaKey          *MetaKey `json:"metaKey"`
 }

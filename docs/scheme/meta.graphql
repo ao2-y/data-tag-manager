@@ -1,0 +1,79 @@
+type MetaKey implements Node {
+    id: ID!
+    name:String!
+}
+
+type Meta implements Node {
+    id: ID!
+    metaKey: MetaKey
+    value: String!
+}
+
+extend type Query {
+    # return all meta keys
+    metaKeys:[MetaKey]
+}
+
+extend type Mutation {
+    # MetaKeyに対しての操作
+    addMetaKey(input:AddMetaKeyInput):AddMetaKeyPayload
+    updateMetaKey(input:UpdateMetaKeyInput):UpdateMetaKeyPayload
+    removeMetaKey(input:RemoveMetaKeyInput):RemoveMetaKeyPayload
+    # Itemに対しての操作
+    addMetaToItem(input:AddMetaToItemInput):AddMetaToItemPayload
+    removeMetaToItem(input:RemoveMetaToItemInput):RemoveMetaToItemPayload
+    # TODO Updateは微妙な気がしたのでいったんなし
+}
+
+input AddMetaKeyInput {
+    clientMutationId: String
+    name:String!
+}
+
+type AddMetaKeyPayload {
+    clientMutationId: String
+    metaKey: MetaKey
+}
+
+input UpdateMetaKeyInput {
+    clientMutationId: String
+    id:ID!
+    name:String!
+}
+
+type UpdateMetaKeyPayload {
+    clientMutationId: String
+    metaKey: MetaKey
+}
+
+input RemoveMetaKeyInput {
+    clientMutationId: String
+    id:ID!
+}
+
+type RemoveMetaKeyPayload {
+    clientMutationId: String
+    metaKey: MetaKey
+}
+
+input AddMetaToItemInput {
+    clientMutationId: String
+    metaKeyId: ID!
+    value:String!
+    itemId: ID!
+}
+
+type AddMetaToItemPayload {
+    clientMutationId: String
+    item: Item
+}
+
+input RemoveMetaToItemInput {
+    clientMutationId: String
+    metaId: ID!
+}
+
+type RemoveMetaToItemPayload {
+    clientMutationId: String
+    item: Item
+}
