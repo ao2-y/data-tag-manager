@@ -15,8 +15,17 @@ type (
 		ParentTagId *uint
 	}
 	Meta struct {
-		ID    uint
-		Name  string
-		Value string
+		ID        uint
+		MetaKeyID uint
+		Value     string
+	}
+	MetaKey struct {
+		ID   uint
+		Name string
+	}
+	ItemTemplate struct {
+		ID       uint
+		Name     string
+		MetaKeys []MetaKey
 	}
 )
