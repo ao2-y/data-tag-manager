@@ -111,6 +111,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		AddItem                    func(childComplexity int, input *model.AddItemInput) int
 		AddItemTemplate            func(childComplexity int, input *model.AddItemTemplateInput) int
+		AddItemWithMetaAndTag      func(childComplexity int, input *model.AddItemWithMetaAndTagInput) int
 		AddMetaKey                 func(childComplexity int, input *model.AddMetaKeyInput) int
 		AddMetaToItem              func(childComplexity int, input *model.AddMetaToItemInput) int
 		AddTag                     func(childComplexity int, input *model.AddTagInput) int
@@ -190,6 +191,7 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	Noop(ctx context.Context, input *model.NoopInput) (*model.NoopPayload, error)
 	AddItem(ctx context.Context, input *model.AddItemInput) (*model.AddItemPayload, error)
+	AddItemWithMetaAndTag(ctx context.Context, input *model.AddItemWithMetaAndTagInput) (*model.AddItemPayload, error)
 	RemoveItem(ctx context.Context, input *model.RemoveItemInput) (*model.RemoveItemPayload, error)
 	AddItemTemplate(ctx context.Context, input *model.AddItemTemplateInput) (*model.AddItemTemplatePayload, error)
 	UpdateItemTemplateName(ctx context.Context, input *model.UpdateItemTemplateNameInput) (*model.UpdateItemTemplatePayload, error)
@@ -453,6 +455,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.AddItemTemplate(childComplexity, args["input"].(*model.AddItemTemplateInput)), true
+
+	case "Mutation.addItemWithMetaAndTag":
+		if e.complexity.Mutation.AddItemWithMetaAndTag == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_addItemWithMetaAndTag_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.AddItemWithMetaAndTag(childComplexity, args["input"].(*model.AddItemWithMetaAndTagInput)), true
 
 	case "Mutation.addMetaKey":
 		if e.complexity.Mutation.AddMetaKey == nil {
@@ -938,6 +952,25 @@ type ItemEdge {
 
 input AddItemInput {
     clientMutationId: String
+    name:String!
+    description:String
+}
+
+input AddItemWithMetaInput {
+    metaKeyId: ID!
+    value: String!
+}
+
+input AddItemWithTagInput {
+    tagId: ID!
+}
+
+input AddItemWithMetaAndTagInput {
+    clientMutationId: String
+    name: String!
+    description: String
+    metas: [AddItemWithMetaInput]
+    tags: [AddItemWithTagInput]
 }
 
 type AddItemPayload {
@@ -957,6 +990,7 @@ type RemoveItemPayload {
 
 extend type Mutation {
     addItem(input:AddItemInput) :AddItemPayload
+    addItemWithMetaAndTag(input: AddItemWithMetaAndTagInput): AddItemPayload
     removeItem(input:RemoveItemInput) : RemoveItemPayload
 }`, BuiltIn: false},
 	{Name: "../docs/scheme/item_template.graphql", Input: `type ItemTemplate implements Node {
@@ -1157,6 +1191,21 @@ func (ec *executionContext) field_Mutation_addItemTemplate_args(ctx context.Cont
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOAddItemTemplateInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemTemplateInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_addItemWithMetaAndTag_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.AddItemWithMetaAndTagInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOAddItemWithMetaAndTagInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemWithMetaAndTagInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2505,6 +2554,45 @@ func (ec *executionContext) _Mutation_addItem(ctx context.Context, field graphql
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().AddItem(rctx, args["input"].(*model.AddItemInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.AddItemPayload)
+	fc.Result = res
+	return ec.marshalOAddItemPayload2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_addItemWithMetaAndTag(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_addItemWithMetaAndTag_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().AddItemWithMetaAndTag(rctx, args["input"].(*model.AddItemWithMetaAndTagInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5087,6 +5175,22 @@ func (ec *executionContext) unmarshalInputAddItemInput(ctx context.Context, obj 
 			if err != nil {
 				return it, err
 			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -5120,6 +5224,106 @@ func (ec *executionContext) unmarshalInputAddItemTemplateInput(ctx context.Conte
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("metaKeyIds"))
 			it.MetaKeyIds, err = ec.unmarshalOID2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputAddItemWithMetaAndTagInput(ctx context.Context, obj interface{}) (model.AddItemWithMetaAndTagInput, error) {
+	var it model.AddItemWithMetaAndTagInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "clientMutationId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clientMutationId"))
+			it.ClientMutationID, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "metas":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("metas"))
+			it.Metas, err = ec.unmarshalOAddItemWithMetaInput2ᚕᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemWithMetaInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "tags":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tags"))
+			it.Tags, err = ec.unmarshalOAddItemWithTagInput2ᚕᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemWithTagInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputAddItemWithMetaInput(ctx context.Context, obj interface{}) (model.AddItemWithMetaInput, error) {
+	var it model.AddItemWithMetaInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "metaKeyId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("metaKeyId"))
+			it.MetaKeyID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "value":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("value"))
+			it.Value, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputAddItemWithTagInput(ctx context.Context, obj interface{}) (model.AddItemWithTagInput, error) {
+	var it model.AddItemWithTagInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "tagId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("tagId"))
+			it.TagID, err = ec.unmarshalNID2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5969,6 +6173,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_noop(ctx, field)
 		case "addItem":
 			out.Values[i] = ec._Mutation_addItem(ctx, field)
+		case "addItemWithMetaAndTag":
+			out.Values[i] = ec._Mutation_addItemWithMetaAndTag(ctx, field)
 		case "removeItem":
 			out.Values[i] = ec._Mutation_removeItem(ctx, field)
 		case "addItemTemplate":
@@ -6914,6 +7120,78 @@ func (ec *executionContext) marshalOAddItemTemplatePayload2ᚖao2ᚑyᚋdataᚑt
 		return graphql.Null
 	}
 	return ec._AddItemTemplatePayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOAddItemWithMetaAndTagInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemWithMetaAndTagInput(ctx context.Context, v interface{}) (*model.AddItemWithMetaAndTagInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputAddItemWithMetaAndTagInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOAddItemWithMetaInput2ᚕᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemWithMetaInput(ctx context.Context, v interface{}) ([]*model.AddItemWithMetaInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*model.AddItemWithMetaInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOAddItemWithMetaInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemWithMetaInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOAddItemWithMetaInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemWithMetaInput(ctx context.Context, v interface{}) (*model.AddItemWithMetaInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputAddItemWithMetaInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOAddItemWithTagInput2ᚕᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemWithTagInput(ctx context.Context, v interface{}) ([]*model.AddItemWithTagInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*model.AddItemWithTagInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOAddItemWithTagInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemWithTagInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOAddItemWithTagInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddItemWithTagInput(ctx context.Context, v interface{}) (*model.AddItemWithTagInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputAddItemWithTagInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOAddMetaKeyInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddMetaKeyInput(ctx context.Context, v interface{}) (*model.AddMetaKeyInput, error) {
