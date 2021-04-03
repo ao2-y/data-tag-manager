@@ -1,0 +1,43 @@
+type ItemTemplate implements Node {
+    id: ID!
+    name: String!
+    metaKeys: [MetaKey]
+}
+
+extend type Query {
+    itemTemplates:[ItemTemplate]
+}
+
+extend type Mutation {
+    addItemTemplate(input:AddItemTemplateInput):AddItemTemplatePayload
+    updateItemTemplateName(input:UpdateItemTemplateNameInput):UpdateItemTemplatePayload
+    updateItemTemplateMetaKeys(input:UpdateItemTemplateMetaKeysInput):UpdateItemTemplatePayload
+}
+
+input AddItemTemplateInput {
+    clientMutationId: String
+    name:String!
+    metaKeyIds:[ID!]
+}
+
+type AddItemTemplatePayload {
+    clientMutationId: String
+    itemTemplate: ItemTemplate
+}
+
+input UpdateItemTemplateNameInput {
+    clientMutationId: String
+    itemTemplateId: ID!
+    name:String
+}
+
+type UpdateItemTemplatePayload {
+    clientMutationId: String
+    itemTemplate: ItemTemplate
+}
+
+input UpdateItemTemplateMetaKeysInput {
+    clientMutationId: String
+    itemTemplateId: ID!
+    metaKeyIds:[ID!]
+}

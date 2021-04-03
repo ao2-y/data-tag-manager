@@ -1,0 +1,36 @@
+# わかめ本のベストプラクティス
+type Query {
+    node(id: ID!): Node
+}
+
+# すべての要素の基底インターフェース
+# Global Object Identification
+# IDはすべてのオブジェクトで一意となる必要がある
+# =DBのIDそのものにはならない
+# TableName:NNN など
+# GitHubではBase64してオブジェクトをIDにしているらしい
+interface Node {
+    id: ID!
+}
+
+type Mutation {
+    # Extendできるように不要なメソッドが生えている
+    noop(input: NoopInput): NoopPayload
+}
+
+input NoopInput {
+    clientMutationId: String
+}
+
+# Bat Practiceだけど妙案がないらしいのでそのまま参考にさせてもらう
+type NoopPayload {
+    clientMutationId: String
+}
+
+# ページング用の型
+type PageInfo {
+    hasPreviousPage: Boolean!
+    startCursor: String
+    hasNextPage: Boolean!
+    endCursor: String
+}
