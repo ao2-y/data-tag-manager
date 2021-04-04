@@ -157,6 +157,16 @@ type RemoveItemPayload struct {
 	Item             *Item   `json:"item"`
 }
 
+type RemoveItemTemplateInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	ItemTemplateID   string  `json:"itemTemplateId"`
+}
+
+type RemoveItemTemplatePayload struct {
+	ClientMutationID *string       `json:"clientMutationId"`
+	ItemTemplate     *ItemTemplate `json:"itemTemplate"`
+}
+
 type RemoveMetaKeyInput struct {
 	ClientMutationID *string `json:"clientMutationId"`
 	ID               string  `json:"id"`

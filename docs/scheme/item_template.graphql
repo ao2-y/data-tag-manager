@@ -12,6 +12,7 @@ extend type Mutation {
     addItemTemplate(input:AddItemTemplateInput):AddItemTemplatePayload
     updateItemTemplateName(input:UpdateItemTemplateNameInput):UpdateItemTemplatePayload
     updateItemTemplateMetaKeys(input:UpdateItemTemplateMetaKeysInput):UpdateItemTemplatePayload
+    removeItemTemplate(input:RemoveItemTemplateInput):RemoveItemTemplatePayload
 }
 
 input AddItemTemplateInput {
@@ -40,4 +41,14 @@ input UpdateItemTemplateMetaKeysInput {
     clientMutationId: String
     itemTemplateId: ID!
     metaKeyIds:[ID!]
+}
+
+type RemoveItemTemplatePayload {
+    clientMutationId: String
+    itemTemplate: ItemTemplate
+}
+
+input RemoveItemTemplateInput {
+    clientMutationId: String
+    itemTemplateId: ID!
 }
