@@ -118,6 +118,7 @@ type ComplexityRoot struct {
 		AddTagToItem               func(childComplexity int, input *model.AddTagToItemInput) int
 		Noop                       func(childComplexity int, input *model.NoopInput) int
 		RemoveItem                 func(childComplexity int, input *model.RemoveItemInput) int
+		RemoveItemTemplate         func(childComplexity int, input *model.RemoveItemTemplateInput) int
 		RemoveMetaKey              func(childComplexity int, input *model.RemoveMetaKeyInput) int
 		RemoveMetaToItem           func(childComplexity int, input *model.RemoveMetaToItemInput) int
 		RemoveTag                  func(childComplexity int, input *model.RemoveTagInput) int
@@ -149,6 +150,11 @@ type ComplexityRoot struct {
 	RemoveItemPayload struct {
 		ClientMutationID func(childComplexity int) int
 		Item             func(childComplexity int) int
+	}
+
+	RemoveItemTemplatePayload struct {
+		ClientMutationID func(childComplexity int) int
+		ItemTemplate     func(childComplexity int) int
 	}
 
 	RemoveMetaKeyPayload struct {
@@ -196,6 +202,7 @@ type MutationResolver interface {
 	AddItemTemplate(ctx context.Context, input *model.AddItemTemplateInput) (*model.AddItemTemplatePayload, error)
 	UpdateItemTemplateName(ctx context.Context, input *model.UpdateItemTemplateNameInput) (*model.UpdateItemTemplatePayload, error)
 	UpdateItemTemplateMetaKeys(ctx context.Context, input *model.UpdateItemTemplateMetaKeysInput) (*model.UpdateItemTemplatePayload, error)
+	RemoveItemTemplate(ctx context.Context, input *model.RemoveItemTemplateInput) (*model.RemoveItemTemplatePayload, error)
 	AddMetaKey(ctx context.Context, input *model.AddMetaKeyInput) (*model.AddMetaKeyPayload, error)
 	UpdateMetaKey(ctx context.Context, input *model.UpdateMetaKeyInput) (*model.UpdateMetaKeyPayload, error)
 	RemoveMetaKey(ctx context.Context, input *model.RemoveMetaKeyInput) (*model.RemoveMetaKeyPayload, error)
@@ -540,6 +547,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.RemoveItem(childComplexity, args["input"].(*model.RemoveItemInput)), true
 
+	case "Mutation.removeItemTemplate":
+		if e.complexity.Mutation.RemoveItemTemplate == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_removeItemTemplate_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.RemoveItemTemplate(childComplexity, args["input"].(*model.RemoveItemTemplateInput)), true
+
 	case "Mutation.removeMetaKey":
 		if e.complexity.Mutation.RemoveMetaKey == nil {
 			break
@@ -717,6 +736,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.RemoveItemPayload.Item(childComplexity), true
+
+	case "RemoveItemTemplatePayload.clientMutationId":
+		if e.complexity.RemoveItemTemplatePayload.ClientMutationID == nil {
+			break
+		}
+
+		return e.complexity.RemoveItemTemplatePayload.ClientMutationID(childComplexity), true
+
+	case "RemoveItemTemplatePayload.itemTemplate":
+		if e.complexity.RemoveItemTemplatePayload.ItemTemplate == nil {
+			break
+		}
+
+		return e.complexity.RemoveItemTemplatePayload.ItemTemplate(childComplexity), true
 
 	case "RemoveMetaKeyPayload.clientMutationId":
 		if e.complexity.RemoveMetaKeyPayload.ClientMutationID == nil {
@@ -1007,6 +1040,7 @@ extend type Mutation {
     addItemTemplate(input:AddItemTemplateInput):AddItemTemplatePayload
     updateItemTemplateName(input:UpdateItemTemplateNameInput):UpdateItemTemplatePayload
     updateItemTemplateMetaKeys(input:UpdateItemTemplateMetaKeysInput):UpdateItemTemplatePayload
+    removeItemTemplate(input:RemoveItemTemplateInput):RemoveItemTemplatePayload
 }
 
 input AddItemTemplateInput {
@@ -1036,7 +1070,16 @@ input UpdateItemTemplateMetaKeysInput {
     itemTemplateId: ID!
     metaKeyIds:[ID!]
 }
-`, BuiltIn: false},
+
+type RemoveItemTemplatePayload {
+    clientMutationId: String
+    itemTemplate: ItemTemplate
+}
+
+input RemoveItemTemplateInput {
+    clientMutationId: String
+    itemTemplateId: ID!
+}`, BuiltIn: false},
 	{Name: "../docs/scheme/meta.graphql", Input: `type MetaKey implements Node {
     id: ID!
     name:String!
@@ -1296,6 +1339,21 @@ func (ec *executionContext) field_Mutation_noop_args(ctx context.Context, rawArg
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalONoopInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐNoopInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_removeItemTemplate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.RemoveItemTemplateInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalORemoveItemTemplateInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐRemoveItemTemplateInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2762,6 +2820,45 @@ func (ec *executionContext) _Mutation_updateItemTemplateMetaKeys(ctx context.Con
 	return ec.marshalOUpdateItemTemplatePayload2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐUpdateItemTemplatePayload(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_removeItemTemplate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_removeItemTemplate_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().RemoveItemTemplate(rctx, args["input"].(*model.RemoveItemTemplateInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.RemoveItemTemplatePayload)
+	fc.Result = res
+	return ec.marshalORemoveItemTemplatePayload2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐRemoveItemTemplatePayload(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_addMetaKey(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3586,6 +3683,70 @@ func (ec *executionContext) _RemoveItemPayload_item(ctx context.Context, field g
 	res := resTmp.(*model.Item)
 	fc.Result = res
 	return ec.marshalOItem2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐItem(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RemoveItemTemplatePayload_clientMutationId(ctx context.Context, field graphql.CollectedField, obj *model.RemoveItemTemplatePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RemoveItemTemplatePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ClientMutationID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _RemoveItemTemplatePayload_itemTemplate(ctx context.Context, field graphql.CollectedField, obj *model.RemoveItemTemplatePayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "RemoveItemTemplatePayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ItemTemplate, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.ItemTemplate)
+	fc.Result = res
+	return ec.marshalOItemTemplate2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐItemTemplate(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _RemoveMetaKeyPayload_clientMutationId(ctx context.Context, field graphql.CollectedField, obj *model.RemoveMetaKeyPayload) (ret graphql.Marshaler) {
@@ -5525,6 +5686,34 @@ func (ec *executionContext) unmarshalInputRemoveItemInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputRemoveItemTemplateInput(ctx context.Context, obj interface{}) (model.RemoveItemTemplateInput, error) {
+	var it model.RemoveItemTemplateInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "clientMutationId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clientMutationId"))
+			it.ClientMutationID, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "itemTemplateId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("itemTemplateId"))
+			it.ItemTemplateID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputRemoveMetaKeyInput(ctx context.Context, obj interface{}) (model.RemoveMetaKeyInput, error) {
 	var it model.RemoveMetaKeyInput
 	var asMap = obj.(map[string]interface{})
@@ -6183,6 +6372,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_updateItemTemplateName(ctx, field)
 		case "updateItemTemplateMetaKeys":
 			out.Values[i] = ec._Mutation_updateItemTemplateMetaKeys(ctx, field)
+		case "removeItemTemplate":
+			out.Values[i] = ec._Mutation_removeItemTemplate(ctx, field)
 		case "addMetaKey":
 			out.Values[i] = ec._Mutation_addMetaKey(ctx, field)
 		case "updateMetaKey":
@@ -6372,6 +6563,32 @@ func (ec *executionContext) _RemoveItemPayload(ctx context.Context, sel ast.Sele
 			out.Values[i] = ec._RemoveItemPayload_clientMutationId(ctx, field, obj)
 		case "item":
 			out.Values[i] = ec._RemoveItemPayload_item(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var removeItemTemplatePayloadImplementors = []string{"RemoveItemTemplatePayload"}
+
+func (ec *executionContext) _RemoveItemTemplatePayload(ctx context.Context, sel ast.SelectionSet, obj *model.RemoveItemTemplatePayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, removeItemTemplatePayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("RemoveItemTemplatePayload")
+		case "clientMutationId":
+			out.Values[i] = ec._RemoveItemTemplatePayload_clientMutationId(ctx, field, obj)
+		case "itemTemplate":
+			out.Values[i] = ec._RemoveItemTemplatePayload_itemTemplate(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -7588,6 +7805,21 @@ func (ec *executionContext) marshalORemoveItemPayload2ᚖao2ᚑyᚋdataᚑtagᚑ
 		return graphql.Null
 	}
 	return ec._RemoveItemPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalORemoveItemTemplateInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐRemoveItemTemplateInput(ctx context.Context, v interface{}) (*model.RemoveItemTemplateInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputRemoveItemTemplateInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalORemoveItemTemplatePayload2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐRemoveItemTemplatePayload(ctx context.Context, sel ast.SelectionSet, v *model.RemoveItemTemplatePayload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._RemoveItemTemplatePayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalORemoveMetaKeyInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐRemoveMetaKeyInput(ctx context.Context, v interface{}) (*model.RemoveMetaKeyInput, error) {

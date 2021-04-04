@@ -7,5 +7,6 @@ import "ao2-y/data-tag-manager/usecase"
 // It serves as dependency injection for your app, add any dependencies you require here.
 
 type Resolver struct {
-	ItemUseCase usecase.Item
+	ItemUseCase  usecase.Item
+	ItemTemplate usecase.ItemTemplate
 }
