@@ -7,7 +7,7 @@ import (
 )
 
 type ItemTemplate interface {
-	FetchAll(ctx context.Context) []*model.ItemTemplate
+	FetchAll(ctx context.Context) ([]*model.ItemTemplate, error)
 	Fetch(ctx context.Context, ID uint) (*model.ItemTemplate, error)
 	Create(ctx context.Context, Name string, MetaKeyIDs []string) (*model.ItemTemplate, error)
 	Update(ctx context.Context, ID uint, Name string, MetaKeyIDs []string) (*model.ItemTemplate, error)
@@ -20,7 +20,7 @@ func NewItemTemplateUseCase() ItemTemplate {
 
 type itemTemplate struct{}
 
-func (i *itemTemplate) FetchAll(ctx context.Context) []*model.ItemTemplate {
+func (i *itemTemplate) FetchAll(ctx context.Context) ([]*model.ItemTemplate, error) {
 	panic("implement me")
 }
 
