@@ -73,23 +73,23 @@ func TestKeyType_ToExternalID(t *testing.T) {
 	}
 }
 
-func TestKeyType_ToInternalID(t *testing.T) {
-	type args struct {
-		ID string
-	}
-	tests := []struct {
-		name string
-		key  KeyType
-		args args
-		want uint
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tt.key.ToInternalID(tt.args.ID); got != tt.want {
-				t.Errorf("ToInternalID() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
+//func TestKeyType_ToInternalID(t *testing.T) {
+//	type args struct {
+//		ID string
+//	}
+//	tests := []struct {
+//		name string
+//		key  KeyType
+//		args args
+//		want uint
+//	}{
+//		// TODO: Add test cases.
+//	}
+//	for _, tt := range tests {
+//		t.Run(tt.name, func(t *testing.T) {
+//			if got := tt.key.ToInternalID(tt.args.ID); got != tt.want {
+//				t.Errorf("ToInternalID() = %v, want %v", got, tt.want)
+//			}
+//		})
+//	}
+//}

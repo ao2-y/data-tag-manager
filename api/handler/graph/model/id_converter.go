@@ -10,20 +10,20 @@ type KeyType string
 
 const (
 	KeyUnknown      KeyType = "Unknown"
-	KeyItemTemplate KeyType = "ItemTemplate"
-	KeyMeta         KeyType = "Meta"
-	KeyTag          KeyType = "Tag"
-	KeyItem         KeyType = "Item"
+	KeyItemTemplate KeyType = "ItemTemplate:"
+	KeyMeta         KeyType = "Meta:"
+	KeyTag          KeyType = "Tag:"
+	KeyItem         KeyType = "Item:"
 )
 
 var keys = []KeyType{KeyItemTemplate, KeyItem, KeyMeta, KeyTag}
 
 func (key KeyType) ToExternalID(ID uint) string {
-	return fmt.Sprintf("%s:%v", key, ID)
+	return fmt.Sprintf("%s%v", key, ID)
 }
 
 func (key KeyType) ToInternalID(ID string) (uint, error) {
-	noStr := ID[len(key)+1:]
+	noStr := ID[len(key):]
 	no, err := strconv.Atoi(noStr)
 	if err != nil {
 		return 0, fmt.Errorf("parse error:%w", err)

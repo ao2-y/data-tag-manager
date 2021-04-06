@@ -10,7 +10,15 @@ import (
 )
 
 func (r *mutationResolver) AddItemTemplate(ctx context.Context, input *model.AddItemTemplateInput) (*model.AddItemTemplatePayload, error) {
-	itemTemplate, err := r.ItemTemplate.Create(ctx, input.Name, input.MetaKeyIds)
+	uintMetaKeyIDs := make([]*uint, len(input.MetaKeyIds))
+	for i, v := range input.MetaKeyIds {
+		id, err := model.KeyMeta.ToInternalID(v)
+		if err != nil {
+			return nil, fmt.Errorf("invalid MetaKeyID,:%w", err)
+		}
+		uintMetaKeyIDs[i] = &id
+	}
+	itemTemplate, err := r.ItemTemplate.Create(ctx, input.Name, uintMetaKeyIDs)
 	if err != nil {
 		return nil, fmt.Errorf("ItemTemplate Create Failed :%w", err)
 	}
