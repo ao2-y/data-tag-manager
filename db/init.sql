@@ -21,12 +21,12 @@ SET NAMES utf8mb4;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
-# Dump of table item
+# Dump of table items
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `item`;
+DROP TABLE IF EXISTS `items`;
 
-CREATE TABLE `item` (
+CREATE TABLE `items` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(4096) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `description` text COLLATE utf8_unicode_ci,
@@ -35,12 +35,12 @@ CREATE TABLE `item` (
 
 
 
-# Dump of table item_meta
+# Dump of table item_metas
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `item_meta`;
+DROP TABLE IF EXISTS `item_metas`;
 
-CREATE TABLE `item_meta` (
+CREATE TABLE `item_metas` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(11) DEFAULT NULL,
   `meta_key_id` int(11) DEFAULT NULL,
@@ -50,12 +50,12 @@ CREATE TABLE `item_meta` (
 
 
 
-# Dump of table item_tag
+# Dump of table item_tags
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `item_tag`;
+DROP TABLE IF EXISTS `item_tags`;
 
-CREATE TABLE `item_tag` (
+CREATE TABLE `item_tags` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `item_id` int(11) NOT NULL,
   `tag_id` int(11) NOT NULL,
@@ -64,12 +64,12 @@ CREATE TABLE `item_tag` (
 
 
 
-# Dump of table item_template
+# Dump of table item_templates
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `item_template`;
+DROP TABLE IF EXISTS `item_templates`;
 
-CREATE TABLE `item_template` (
+CREATE TABLE `item_templates` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(4096) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
@@ -77,12 +77,12 @@ CREATE TABLE `item_template` (
 
 
 
-# Dump of table item_template_meta_key
+# Dump of table item_template_meta_keys
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `item_template_meta_key`;
+DROP TABLE IF EXISTS `item_template_meta_keys`;
 
-CREATE TABLE `item_template_meta_key` (
+CREATE TABLE `item_template_meta_keys` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `item_template_id` int(11) NOT NULL,
   `meta_key_id` int(11) NOT NULL,
@@ -91,12 +91,12 @@ CREATE TABLE `item_template_meta_key` (
 
 
 
-# Dump of table meta_key
+# Dump of table meta_keys
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `meta_key`;
+DROP TABLE IF EXISTS `meta_keys`;
 
-CREATE TABLE `meta_key` (
+CREATE TABLE `meta_keys` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(256) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
@@ -104,12 +104,12 @@ CREATE TABLE `meta_key` (
 
 
 
-# Dump of table tag
+# Dump of table tags
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `tag`;
+DROP TABLE IF EXISTS `tags`;
 
-CREATE TABLE `tag` (
+CREATE TABLE `tags` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `parent_tag_id` int(11) NOT NULL,
   `level` int(11) NOT NULL DEFAULT '1',
