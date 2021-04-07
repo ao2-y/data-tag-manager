@@ -1,10 +1,8 @@
 package main
 
 import (
-	"ao2-y/data-tag-manager/handler/graph"
 	"ao2-y/data-tag-manager/handler/graph/generated"
-	"ao2-y/data-tag-manager/infra/persistent/mysql"
-	"ao2-y/data-tag-manager/usecase"
+	"ao2-y/data-tag-manager/injector"
 	"log"
 	"net/http"
 	"os"
@@ -21,17 +19,7 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
-		ItemUseCase: usecase.NewItemUseCase(),
-		ItemTemplate: usecase.NewItemTemplateUseCase(
-			mysql.NewItemTemplateRepository(mysql.NewDBConnection(
-				"localhost",
-				"3306",
-				"admin",
-				"password",
-				"data_tag_manager",
-			))),
-	}}))
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(injector.NewGraphqlConfig()))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)

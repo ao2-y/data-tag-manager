@@ -10,7 +10,17 @@ import (
 )
 
 func (r *mutationResolver) AddMetaKey(ctx context.Context, input *model.AddMetaKeyInput) (*model.AddMetaKeyPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	useCaseRet, err := r.MetaUseCase.CreateKey(ctx, input.Name)
+	if err != nil {
+		return nil, fmt.Errorf("AddMetaKey operation failed:%w", err)
+	}
+	return &model.AddMetaKeyPayload{
+		ClientMutationID: input.ClientMutationID,
+		MetaKey: &model.MetaKey{
+			ID:   model.KeyMeta.ToExternalID(useCaseRet.ID),
+			Name: useCaseRet.Name,
+		},
+	}, nil
 }
 
 func (r *mutationResolver) UpdateMetaKey(ctx context.Context, input *model.UpdateMetaKeyInput) (*model.UpdateMetaKeyPayload, error) {
