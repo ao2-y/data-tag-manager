@@ -9,4 +9,5 @@ import "ao2-y/data-tag-manager/usecase"
 type Resolver struct {
 	ItemUseCase  usecase.Item
 	ItemTemplate usecase.ItemTemplate
+	MetaUseCase  usecase.Meta
 }

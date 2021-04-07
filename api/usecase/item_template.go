@@ -15,14 +15,19 @@ type ItemTemplate interface {
 	Remove(ctx context.Context, ID uint) (*model.ItemTemplate, error)
 }
 
-func NewItemTemplateUseCase(repo repository.ItemTemplate) ItemTemplate {
+func NewItemTemplateUseCase(
+	itemTemplateRepository repository.ItemTemplate,
+	metaRepository repository.Meta,
+) ItemTemplate {
 	return &itemTemplate{
-		repository: repo,
+		itemTemplateRepository: itemTemplateRepository,
+		metaRepository:         metaRepository,
 	}
 }
 
 type itemTemplate struct {
-	repository repository.ItemTemplate
+	itemTemplateRepository repository.ItemTemplate
+	metaRepository         repository.Meta
 }
 
 func (i *itemTemplate) FetchAll(ctx context.Context) ([]*model.ItemTemplate, error) {
@@ -34,7 +39,7 @@ func (i *itemTemplate) Fetch(ctx context.Context, ID uint) (*model.ItemTemplate,
 }
 
 func (i *itemTemplate) Create(ctx context.Context, Name string, MetaKeyIDs []*uint) (*model.ItemTemplate, error) {
-	i.repository.Create(ctx, Name, MetaKeyIDs)
+	i.itemTemplateRepository.Create(ctx, Name, MetaKeyIDs)
 	return nil, fmt.Errorf("not implement")
 }
 

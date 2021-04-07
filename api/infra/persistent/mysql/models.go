@@ -17,21 +17,18 @@ type (
 	}
 
 	MetaKeys struct {
-		ID           uint `gorm:"primaryKey"`
-		ParentMetaId *uint
-		Level        uint8
-		Name         string
+		ID   uint `gorm:"primaryKey"`
+		Name string
 		//CreatedAt   time.Time
 		//UpdatedAt   time.Time
 		//DeletedAt   gorm.DeletedAt `gorm:"index"`
-		ParentMeta *MetaKeys
 	}
 
 	Tags struct {
-		ID        uint `gorm:"primaryKey"`
-		ItemID    uint
-		MetaKeyID uint
-		Value     string
+		ID          uint `gorm:"primaryKey"`
+		Name        string
+		Level       int
+		ParentTagID *uint
 		//CreatedAt time.Time
 		//UpdatedAt time.Time
 		//DeletedAt gorm.DeletedAt `gorm:"index"`
@@ -88,14 +85,21 @@ func itemTemplateToDomain(template ItemTemplates) model.ItemTemplate {
 func metaKeysToDomain(keys []ItemTemplateMetaKeys) []model.MetaKey {
 	ret := make([]model.MetaKey, 0, len(keys))
 	for i, v := range keys {
-		ret[i] = metaKeyToDomain(v)
+		ret[i] = itemTemplateMetaKeyToDomain(v)
 	}
 	return ret
 }
 
-func metaKeyToDomain(key ItemTemplateMetaKeys) model.MetaKey {
+func itemTemplateMetaKeyToDomain(key ItemTemplateMetaKeys) model.MetaKey {
 	return model.MetaKey{
 		ID:   key.MetaKeys.ID,
 		Name: key.MetaKeys.Name,
+	}
+}
+
+func metaKeyToDomain(key *MetaKeys) *model.MetaKey {
+	return &model.MetaKey{
+		ID:   key.ID,
+		Name: key.Name,
 	}
 }
