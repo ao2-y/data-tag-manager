@@ -8,7 +8,7 @@ import (
 
 func NewDBConnection(
 	Host string,
-	Port string,
+	Port int,
 	User string,
 	Password string,
 	DatabaseName string,
@@ -18,13 +18,13 @@ func NewDBConnection(
 
 func getMysqlConn(
 	Host string,
-	Port string,
+	Port int,
 	User string,
 	Password string,
 	DatabaseName string,
 ) *gorm.DB {
 	connectionString := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?parseTime=true&loc=Local",
+		"%s:%s@tcp(%s:%v)/%s?parseTime=true&loc=Local",
 		User,
 		Password,
 		Host,

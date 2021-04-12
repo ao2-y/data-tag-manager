@@ -1,0 +1,6 @@
+database:
+  host: localhost
+  port: 3306
+  user: admin
+  password: password
+  databaseName: data_tag_manager
