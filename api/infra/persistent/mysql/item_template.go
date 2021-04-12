@@ -4,7 +4,6 @@ import (
 	"ao2-y/data-tag-manager/domain/model"
 	"ao2-y/data-tag-manager/domain/repository"
 	"context"
-	"fmt"
 	"gorm.io/gorm"
 )
 
@@ -26,7 +25,7 @@ func (i *itemTemplate) Create(ctx context.Context, name string, metaKeyIDs []*ui
 	result := i.db.WithContext(ctx).Create(it)
 	if result.Error != nil {
 		result.Rollback()
-		return nil, fmt.Errorf("item template create error. %w", result.Error)
+		return nil, repository.NewStoreOperationError(repository.StoreOperationCodeUnkownError, result.Error)
 	}
 	result.Commit()
 
@@ -39,7 +38,10 @@ func (i *itemTemplate) FetchByID(ctx context.Context, ID uint) (*model.ItemTempl
 	}
 	result := i.db.WithContext(ctx).First(&itemTemplates)
 	if result.Error != nil {
-		return nil, fmt.Errorf("item template FetchByID error.:%w", result.Error)
+		if result.Error == gorm.ErrRecordNotFound {
+			return nil, repository.NewStoreOperationError(repository.StoreOperationCodeNotFound, nil)
+		}
+		return nil, repository.NewStoreOperationError(repository.StoreOperationCodeUnkownError, result.Error)
 	}
 
 	ret := itemTemplateToDomain(itemTemplates)

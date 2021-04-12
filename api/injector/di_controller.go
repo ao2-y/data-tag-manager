@@ -8,12 +8,13 @@ import (
 )
 
 func NewGraphqlConfig() generated.Config {
+	config := newConfig()
 	dbCon := mysql.NewDBConnection(
-		"localhost",
-		"3306",
-		"admin",
-		"password",
-		"data_tag_manager",
+		config.Database.Host,
+		config.Database.Port,
+		config.Database.User,
+		config.Database.Password,
+		config.Database.DatabaseName,
 	)
 	metaRepository := mysql.NewMetaRepository(dbCon)
 	itemTemplateRepository := mysql.NewItemTemplateRepository(dbCon)
