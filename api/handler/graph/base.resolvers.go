@@ -11,7 +11,7 @@ import (
 )
 
 func (r *mutationResolver) Noop(ctx context.Context, input *model.NoopInput) (*model.NoopPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	return &model.NoopPayload{ClientMutationID: input.ClientMutationID}, nil
 }
 
 func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error) {
@@ -23,9 +23,9 @@ func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error)
 	case model.KeyUnknown:
 		return nil, fmt.Errorf("ID type unkown")
 	case model.KeyItemTemplate:
-		it, err := r.ItemTemplate.Fetch(ctx, uintId)
+		it, err := r.ItemTemplate.FetchByID(ctx, uintId)
 		if err != nil {
-			return nil, fmt.Errorf("ItemTemplate Fetch Failed.%w", err)
+			return nil, fmt.Errorf("ItemTemplate FetchByID Failed.%w", err)
 		}
 		return &model.ItemTemplate{
 			ID:       model.KeyItemTemplate.ToExternalID(it.ID),
@@ -37,7 +37,14 @@ func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error)
 	case model.KeyTag:
 		return nil, fmt.Errorf("tag not implement")
 	case model.KeyMeta:
-		return nil, fmt.Errorf("meta not implement")
+		ret, err := r.MetaUseCase.FetchKeyByID(ctx, uintId)
+		if err != nil {
+			return nil, newGraphqlError("", err)
+		}
+		return &model.MetaKey{
+			ID:   model.KeyMeta.ToExternalID(ret.ID),
+			Name: ret.Name,
+		}, nil
 	default:
 		panic("ここにくることがない")
 	}

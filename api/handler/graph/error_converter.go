@@ -8,7 +8,7 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
-func createError(msg string, err error) error {
+func newGraphqlError(msg string, err error) error {
 	// 独自Error型から対応するコードに変換して返す
 	var validationError *usecase.ValidationError
 	var resourceNotFoundError *usecase.ResourceNotFoundError

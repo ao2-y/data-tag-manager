@@ -9,7 +9,7 @@ import (
 
 type ItemTemplate interface {
 	FetchAll(ctx context.Context) ([]*model.ItemTemplate, error)
-	Fetch(ctx context.Context, ID uint) (*model.ItemTemplate, error)
+	FetchByID(ctx context.Context, ID uint) (*model.ItemTemplate, error)
 	Create(ctx context.Context, Name string, MetaKeyIDs []*uint) (*model.ItemTemplate, error)
 	Update(ctx context.Context, ID uint, Name string, MetaKeyIDs []string) (*model.ItemTemplate, error)
 	Remove(ctx context.Context, ID uint) (*model.ItemTemplate, error)
@@ -34,7 +34,7 @@ func (i *itemTemplate) FetchAll(ctx context.Context) ([]*model.ItemTemplate, err
 	panic("implement me")
 }
 
-func (i *itemTemplate) Fetch(ctx context.Context, ID uint) (*model.ItemTemplate, error) {
+func (i *itemTemplate) FetchByID(ctx context.Context, ID uint) (*model.ItemTemplate, error) {
 	return nil, fmt.Errorf("not implement")
 }
 

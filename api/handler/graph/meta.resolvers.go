@@ -12,7 +12,7 @@ import (
 func (r *mutationResolver) AddMetaKey(ctx context.Context, input *model.AddMetaKeyInput) (*model.AddMetaKeyPayload, error) {
 	useCaseRet, err := r.MetaUseCase.CreateKey(ctx, input.Name)
 	if err != nil {
-		return nil, createError("AddMetaKey operation failed", err)
+		return nil, newGraphqlError("AddMetaKey operation failed", err)
 	}
 	return &model.AddMetaKeyPayload{
 		ClientMutationID: input.ClientMutationID,
@@ -26,11 +26,11 @@ func (r *mutationResolver) AddMetaKey(ctx context.Context, input *model.AddMetaK
 func (r *mutationResolver) UpdateMetaKey(ctx context.Context, input *model.UpdateMetaKeyInput) (*model.UpdateMetaKeyPayload, error) {
 	innerID, err := model.KeyMeta.ToInternalID(input.ID)
 	if err != nil {
-		return nil, createError("UpdateMetaKey ID validation failed.", nil)
+		return nil, newGraphqlError("UpdateMetaKey ID validation failed.", nil)
 	}
 	useCaseRet, err := r.MetaUseCase.UpdateKey(ctx, innerID, input.Name)
 	if err != nil {
-		return nil, createError("UpdateMetaKey operation failed", err)
+		return nil, newGraphqlError("UpdateMetaKey operation failed", err)
 	}
 	return &model.UpdateMetaKeyPayload{
 		ClientMutationID: input.ClientMutationID,
@@ -44,11 +44,11 @@ func (r *mutationResolver) UpdateMetaKey(ctx context.Context, input *model.Updat
 func (r *mutationResolver) RemoveMetaKey(ctx context.Context, input *model.RemoveMetaKeyInput) (*model.RemoveMetaKeyPayload, error) {
 	innerID, err := model.KeyMeta.ToInternalID(input.ID)
 	if err != nil {
-		return nil, createError("RemoveMetaKey ID validation failed.", nil)
+		return nil, newGraphqlError("RemoveMetaKey ID validation failed.", nil)
 	}
 	useCaseRet, err := r.MetaUseCase.RemoveKey(ctx, innerID)
 	if err != nil {
-		return nil, createError("UpdateMetaKey operation failed", err)
+		return nil, newGraphqlError("UpdateMetaKey operation failed", err)
 	}
 	return &model.RemoveMetaKeyPayload{
 		ClientMutationID: input.ClientMutationID,
