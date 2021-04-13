@@ -6,6 +6,6 @@ import (
 )
 
 type ItemTemplate interface {
-	//Fetch(ctx context.Context) ([]*model.ItemTemplate,error)
+	//FetchByID(ctx context.Context) ([]*model.ItemTemplate,error)
 	Create(ctx context.Context, name string, metaKeyIDs []*uint) (*model.ItemTemplate, error)
 }

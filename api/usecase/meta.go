@@ -11,10 +11,25 @@ type Meta interface {
 	CreateKey(ctx context.Context, name string) (*model.MetaKey, error)
 	UpdateKey(ctx context.Context, ID uint, name string) (*model.MetaKey, error)
 	RemoveKey(ctx context.Context, ID uint) (*model.MetaKey, error)
+	FetchKeyByID(ctx context.Context, ID uint) (*model.MetaKey, error)
 }
 
 type metaUseCase struct {
 	repository repository.Meta
+}
+
+func (m *metaUseCase) FetchKeyByID(ctx context.Context, ID uint) (*model.MetaKey, error) {
+	ret, err := m.repository.FetchByID(ctx, ID)
+	if err != nil {
+		var repError *repository.OperationError
+		if errors.As(err, &repError) {
+			if repError.Code == repository.ErrNotFound {
+				return nil, NewResourceNorFoundError("Meta")
+			}
+		}
+		return nil, NewInternalServerError("MetaRepository.FetchKeyByID return unknown error.", err)
+	}
+	return ret, nil
 }
 
 func (m *metaUseCase) UpdateKey(ctx context.Context, ID uint, name string) (*model.MetaKey, error) {
@@ -34,10 +49,8 @@ func (m *metaUseCase) UpdateKey(ctx context.Context, ID uint, name string) (*mod
 			return nil, NewInternalServerError("MetaRepository.FetchByName return unknown error.", err)
 		}
 	}
-	if ret != nil {
-		if ret.ID != ID {
-			return nil, NewValidationError(ValidationTypeExist, "Name", name, nil)
-		}
+	if ret.ID != ID {
+		return nil, NewValidationError(ValidationTypeExist, "Name", name, nil)
 	}
 	return m.repository.UpdateKey(ctx, ID, name)
 }
