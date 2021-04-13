@@ -34,3 +34,12 @@ type PageInfo {
     hasNextPage: Boolean!
     endCursor: String
 }
+
+# ErrorのEnum
+enum Error {
+    INTERNAL_SERVER_ERROR
+    VALIDATION_ERROR
+    RESOURCE_NOT_FOUND
+    OPTIMISE_LOCK_ERROR
+    AUTH_ERROR
+}
