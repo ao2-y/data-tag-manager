@@ -39,8 +39,12 @@ func (i *itemTemplate) Fetch(ctx context.Context, ID uint) (*model.ItemTemplate,
 }
 
 func (i *itemTemplate) Create(ctx context.Context, Name string, MetaKeyIDs []*uint) (*model.ItemTemplate, error) {
-	i.itemTemplateRepository.Create(ctx, Name, MetaKeyIDs)
-	return nil, fmt.Errorf("not implement")
+	// MetaKeyIDの生存確認
+	template, err := i.itemTemplateRepository.Create(ctx, Name, MetaKeyIDs)
+	if err != nil {
+		return nil, err
+	}
+	return template, nil
 }
 
 func (i *itemTemplate) Update(ctx context.Context, ID uint, Name string, MetaKeyIDs []string) (*model.ItemTemplate, error) {

@@ -25,7 +25,7 @@ func (i *itemTemplate) Create(ctx context.Context, name string, metaKeyIDs []*ui
 	result := i.db.WithContext(ctx).Create(it)
 	if result.Error != nil {
 		result.Rollback()
-		return nil, repository.NewStoreOperationError(repository.StoreOperationCodeUnkownError, result.Error)
+		return nil, repository.NewOperationError(repository.ErrUnknown, result.Error)
 	}
 	result.Commit()
 
@@ -39,9 +39,9 @@ func (i *itemTemplate) FetchByID(ctx context.Context, ID uint) (*model.ItemTempl
 	result := i.db.WithContext(ctx).First(&itemTemplates)
 	if result.Error != nil {
 		if result.Error == gorm.ErrRecordNotFound {
-			return nil, repository.NewStoreOperationError(repository.StoreOperationCodeNotFound, nil)
+			return nil, repository.NewOperationError(repository.ErrNotFound, nil)
 		}
-		return nil, repository.NewStoreOperationError(repository.StoreOperationCodeUnkownError, result.Error)
+		return nil, repository.NewOperationError(repository.ErrUnknown, result.Error)
 	}
 
 	ret := itemTemplateToDomain(itemTemplates)

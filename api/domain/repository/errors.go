@@ -2,54 +2,28 @@ package repository
 
 import "fmt"
 
-// ValidationError input param validation error
-type ValidationError struct {
-	cause error
-}
-
-func (e *ValidationError) Error() string {
-	return fmt.Sprintf("validation failed. %+v", e.cause)
-}
-
-func (e *ValidationError) UnWrap() error {
-	return e.cause
-}
-
-// InfrastructureError infrastructure error
-type InfrastructureError struct {
-	cause error
-}
-
-func (e *InfrastructureError) Error() string {
-	return fmt.Sprintf("infrastructure error. %+v", e.cause)
-}
-
-func (e *InfrastructureError) UnWrap() error {
-	return e.cause
-}
-
-type StoreOperationCode int
+type ErrorCode int
 
 const (
-	_ StoreOperationCode = iota
-	StoreOperationCodeUnkownError
-	StoreOperationCodeNotFound
+	_ ErrorCode = iota
+	ErrUnknown
+	ErrNotFound
 )
 
-// StoreOperationError datastore operation error
-type StoreOperationError struct {
+// OperationError datastore operation error
+type OperationError struct {
 	cause error
-	Code  StoreOperationCode
+	Code  ErrorCode
 }
 
-func (e *StoreOperationError) Error() string {
-	return fmt.Sprintf("store operation error. code:[%v] %+v", e.Code, e.cause)
+func (e OperationError) Error() string {
+	return fmt.Sprintf("operation error. code:[%v] %+v", e.Code, e.cause)
 }
 
-func (e *StoreOperationError) UnWrap() error {
+func (e OperationError) UnWrap() error {
 	return e.cause
 }
 
-func NewStoreOperationError(code StoreOperationCode, err error) error {
-	return &StoreOperationError{Code: code, cause: err}
+func NewOperationError(code ErrorCode, err error) error {
+	return &OperationError{Code: code, cause: err}
 }

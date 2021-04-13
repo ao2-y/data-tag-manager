@@ -12,7 +12,7 @@ import (
 func (r *mutationResolver) AddMetaKey(ctx context.Context, input *model.AddMetaKeyInput) (*model.AddMetaKeyPayload, error) {
 	useCaseRet, err := r.MetaUseCase.CreateKey(ctx, input.Name)
 	if err != nil {
-		return nil, fmt.Errorf("AddMetaKey operation failed:%w", err)
+		return nil, createError("AddMetaKey operation failed", err)
 	}
 	return &model.AddMetaKeyPayload{
 		ClientMutationID: input.ClientMutationID,
@@ -24,11 +24,39 @@ func (r *mutationResolver) AddMetaKey(ctx context.Context, input *model.AddMetaK
 }
 
 func (r *mutationResolver) UpdateMetaKey(ctx context.Context, input *model.UpdateMetaKeyInput) (*model.UpdateMetaKeyPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	innerID, err := model.KeyMeta.ToInternalID(input.ID)
+	if err != nil {
+		return nil, createError("UpdateMetaKey ID validation failed.", nil)
+	}
+	useCaseRet, err := r.MetaUseCase.UpdateKey(ctx, innerID, input.Name)
+	if err != nil {
+		return nil, createError("UpdateMetaKey operation failed", err)
+	}
+	return &model.UpdateMetaKeyPayload{
+		ClientMutationID: input.ClientMutationID,
+		MetaKey: &model.MetaKey{
+			ID:   model.KeyMeta.ToExternalID(useCaseRet.ID),
+			Name: useCaseRet.Name,
+		},
+	}, nil
 }
 
 func (r *mutationResolver) RemoveMetaKey(ctx context.Context, input *model.RemoveMetaKeyInput) (*model.RemoveMetaKeyPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	innerID, err := model.KeyMeta.ToInternalID(input.ID)
+	if err != nil {
+		return nil, createError("RemoveMetaKey ID validation failed.", nil)
+	}
+	useCaseRet, err := r.MetaUseCase.RemoveKey(ctx, innerID)
+	if err != nil {
+		return nil, createError("UpdateMetaKey operation failed", err)
+	}
+	return &model.RemoveMetaKeyPayload{
+		ClientMutationID: input.ClientMutationID,
+		MetaKey: &model.MetaKey{
+			ID:   model.KeyMeta.ToExternalID(useCaseRet.ID),
+			Name: useCaseRet.Name,
+		},
+	}, nil
 }
 
 func (r *mutationResolver) AddMetaToItem(ctx context.Context, input *model.AddMetaToItemInput) (*model.AddMetaToItemPayload, error) {

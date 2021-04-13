@@ -2,6 +2,12 @@
 
 package model
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type Node interface {
 	IsNode()
 }
@@ -242,4 +248,51 @@ type UpdateMetaKeyInput struct {
 type UpdateMetaKeyPayload struct {
 	ClientMutationID *string  `json:"clientMutationId"`
 	MetaKey          *MetaKey `json:"metaKey"`
+}
+
+type Error string
+
+const (
+	ErrorInternalServerError Error = "INTERNAL_SERVER_ERROR"
+	ErrorValidationError     Error = "VALIDATION_ERROR"
+	ErrorResourceNotFound    Error = "RESOURCE_NOT_FOUND"
+	ErrorOptimiseLockError   Error = "OPTIMISE_LOCK_ERROR"
+	ErrorAuthError           Error = "AUTH_ERROR"
+)
+
+var AllError = []Error{
+	ErrorInternalServerError,
+	ErrorValidationError,
+	ErrorResourceNotFound,
+	ErrorOptimiseLockError,
+	ErrorAuthError,
+}
+
+func (e Error) IsValid() bool {
+	switch e {
+	case ErrorInternalServerError, ErrorValidationError, ErrorResourceNotFound, ErrorOptimiseLockError, ErrorAuthError:
+		return true
+	}
+	return false
+}
+
+func (e Error) String() string {
+	return string(e)
+}
+
+func (e *Error) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Error(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Error", str)
+	}
+	return nil
+}
+
+func (e Error) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }

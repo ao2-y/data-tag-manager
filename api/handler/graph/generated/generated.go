@@ -955,6 +955,15 @@ type PageInfo {
     startCursor: String
     hasNextPage: Boolean!
     endCursor: String
+}
+
+# ErrorのEnum
+enum Error {
+    INTERNAL_SERVER_ERROR
+    VALIDATION_ERROR
+    RESOURCE_NOT_FOUND
+    OPTIMISE_LOCK_ERROR
+    AUTH_ERROR
 }`, BuiltIn: false},
 	{Name: "../docs/scheme/item.graphql", Input: `type Item implements Node {
     id: ID!
