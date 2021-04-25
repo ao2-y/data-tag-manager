@@ -16,7 +16,7 @@ func NewGraphqlConfig() generated.Config {
 		config.Database.Password,
 		config.Database.DatabaseName,
 	)
-	metaRepository := mysql.NewMetaRepository(dbCon)
+	metaRepository := mysql.NewMetaRepository(dbCon, true)
 	itemTemplateRepository := mysql.NewItemTemplateRepository(dbCon)
 	itemUseCase := usecase.NewItemUseCase()
 	itemTemplateUseCase := usecase.NewItemTemplateUseCase(itemTemplateRepository, metaRepository)

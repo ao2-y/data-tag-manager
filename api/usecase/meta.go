@@ -3,6 +3,7 @@ package usecase
 import (
 	"ao2-y/data-tag-manager/domain/model"
 	"ao2-y/data-tag-manager/domain/repository"
+	"ao2-y/data-tag-manager/logger"
 	"context"
 	"errors"
 )
@@ -19,6 +20,7 @@ type metaUseCase struct {
 }
 
 func (m *metaUseCase) FetchKeyByID(ctx context.Context, ID uint) (*model.MetaKey, error) {
+	logger.Ctx(ctx).Debug("Test2!!")
 	ret, err := m.repository.FetchByID(ctx, ID)
 	if err != nil {
 		var repError *repository.OperationError
@@ -90,6 +92,7 @@ func (m *metaUseCase) RemoveKey(ctx context.Context, ID uint) (*model.MetaKey, e
 			return nil, NewInternalServerError("MetaRepository.FetchByID return unknown error.", err)
 		}
 	}
+	// TODO FIXME ItemTemplate/Itemに紐づいているものが存在する場合は削除させない
 	return m.repository.RemoveKey(ctx, ID)
 }
 

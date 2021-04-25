@@ -6,8 +6,10 @@ package graph
 import (
 	"ao2-y/data-tag-manager/handler/graph/generated"
 	"ao2-y/data-tag-manager/handler/graph/model"
+	"ao2-y/data-tag-manager/logger"
 	"context"
 	"fmt"
+	"go.uber.org/zap"
 )
 
 func (r *mutationResolver) Noop(ctx context.Context, input *model.NoopInput) (*model.NoopPayload, error) {
@@ -15,7 +17,9 @@ func (r *mutationResolver) Noop(ctx context.Context, input *model.NoopInput) (*m
 }
 
 func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error) {
+	logger.Ctx(ctx).Debug("Test!!")
 	uintId, keyType, err := model.IDtoKeyNameAndInternalID(id)
+	ctx = logger.With(ctx, zap.String("ID", id))
 	if err != nil {
 		return nil, fmt.Errorf("ID type error:%w", err)
 	}
