@@ -1,9 +1,13 @@
 package mysql
 
 import (
+	"ao2-y/data-tag-manager/logger"
 	"fmt"
+	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	gormLogger "gorm.io/gorm/logger"
+	"time"
 )
 
 func NewDBConnection(
@@ -14,6 +18,14 @@ func NewDBConnection(
 	DatabaseName string,
 ) *gorm.DB {
 	return getMysqlConn(Host, Port, User, Password, DatabaseName)
+}
+
+type gormLog struct {
+	zap *zap.Logger
+}
+
+func (l *gormLog) Printf(msg string, values ...interface{}) {
+	l.zap.Info(fmt.Sprintf(msg, values...))
 }
 
 func getMysqlConn(
@@ -31,7 +43,20 @@ func getMysqlConn(
 		Port,
 		DatabaseName,
 	)
-	conn, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{})
+	// TODO 暫定
+	logger := logger.InitApplicationLogger()
+	gormLog := &gormLog{zap: logger}
+	newLogger := gormLogger.New(
+		gormLog,
+		gormLogger.Config{
+			SlowThreshold: 5 * time.Second, // Slow SQL threshold
+			LogLevel:      gormLogger.Info, // Log level
+			Colorful:      false,           // Disable color
+		},
+	)
+	conn, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{
+		Logger: newLogger,
+	})
 	if err != nil {
 		panic(fmt.Sprintf("database connection error.:%w", err))
 	}

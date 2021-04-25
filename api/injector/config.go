@@ -25,7 +25,6 @@ func newConfig() *config {
 	}
 	viper.SetConfigName(envName)
 	viper.SetConfigType("yaml")
-	viper.AddConfigPath(".")
 	viper.AddConfigPath("./config/")
 	if err := viper.ReadInConfig(); err != nil {
 		panic(fmt.Errorf("config read error.%w", err))

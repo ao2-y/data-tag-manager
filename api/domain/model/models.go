@@ -1,5 +1,9 @@
 package model
 
+const (
+	ContextKeyRequestID = "RequestID"
+)
+
 type (
 	Item struct {
 		ID          uint
