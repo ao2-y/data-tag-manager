@@ -35,15 +35,15 @@ func NewInMemoryCache() Cache {
 type noCache struct {
 }
 
-func (n noCache) Store(key string, obj interface{}) {
+func (n noCache) Store(_ string, _ interface{}) {
 	return
 }
 
-func (n noCache) Restore(key string) interface{} {
+func (n noCache) Restore(_ string) interface{} {
 	return nil
 }
 
-func (n noCache) Delete(key string) {
+func (n noCache) Delete(_ string) {
 	return
 }
 
