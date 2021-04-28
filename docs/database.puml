@@ -19,6 +19,7 @@ entity "tag" {
     # parent_tag_id [FK(tag.id)]
     level
     name
+    color
 }
 
 entity "item_meta" {
