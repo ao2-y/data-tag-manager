@@ -1,7 +1,6 @@
 package mysql
 
 import (
-	"ao2-y/data-tag-manager/logger"
 	"fmt"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
@@ -11,13 +10,14 @@ import (
 )
 
 func NewDBConnection(
+	appLogger *zap.Logger,
 	Host string,
 	Port int,
 	User string,
 	Password string,
 	DatabaseName string,
 ) *gorm.DB {
-	return getMysqlConn(Host, Port, User, Password, DatabaseName)
+	return getMysqlConn(appLogger, Host, Port, User, Password, DatabaseName)
 }
 
 type gormLog struct {
@@ -29,6 +29,7 @@ func (l *gormLog) Printf(msg string, values ...interface{}) {
 }
 
 func getMysqlConn(
+	appLogger *zap.Logger,
 	Host string,
 	Port int,
 	User string,
@@ -43,11 +44,9 @@ func getMysqlConn(
 		Port,
 		DatabaseName,
 	)
-	// TODO 暫定
-	logger := logger.InitApplicationLogger()
-	gormLog := &gormLog{zap: logger}
+	l := &gormLog{zap: appLogger}
 	newLogger := gormLogger.New(
-		gormLog,
+		l,
 		gormLogger.Config{
 			SlowThreshold: 5 * time.Second, // Slow SQL threshold
 			LogLevel:      gormLogger.Info, // Log level
