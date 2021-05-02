@@ -6,6 +6,7 @@ import (
 	"ao2-y/data-tag-manager/logger"
 	"context"
 	"errors"
+	"fmt"
 )
 
 type Meta interface {
@@ -35,6 +36,20 @@ func (m *metaUseCase) FetchKeyByID(ctx context.Context, ID uint) (*model.MetaKey
 }
 
 func (m *metaUseCase) UpdateKey(ctx context.Context, ID uint, name string) (*model.MetaKey, error) {
+	// 存在チェック
+	_, err := m.repository.FetchByID(ctx, ID)
+	if err != nil {
+		var repError *repository.OperationError
+		if errors.As(err, &repError) {
+			switch repError.Code {
+			case repository.ErrNotFound:
+				return nil, NewResourceNorFoundError(fmt.Sprintf("Meta:%v", ID))
+			default:
+				// 何もしない
+			}
+		}
+		return nil, NewInternalServerError("MetaRepository.FetchByID return unknown error.", err)
+	}
 	// ハンドリングのためにユニーク制約はありつつも、チェックはやる
 	ret, err := m.repository.FetchByName(ctx, name)
 	if err != nil {
@@ -51,7 +66,7 @@ func (m *metaUseCase) UpdateKey(ctx context.Context, ID uint, name string) (*mod
 			return nil, NewInternalServerError("MetaRepository.FetchByName return unknown error.", err)
 		}
 	}
-	if ret.ID != ID {
+	if ret != nil && ret.ID != ID {
 		return nil, NewValidationError(ValidationTypeExist, "Name", name, nil)
 	}
 	return m.repository.UpdateKey(ctx, ID, name)
@@ -89,8 +104,8 @@ func (m *metaUseCase) RemoveKey(ctx context.Context, ID uint) (*model.MetaKey, e
 			if repoError.Code == repository.ErrNotFound {
 				return nil, NewResourceNorFoundError("Meta")
 			}
-			return nil, NewInternalServerError("MetaRepository.FetchByID return unknown error.", err)
 		}
+		return nil, NewInternalServerError("MetaRepository.FetchByID return unknown error.", err)
 	}
 	// TODO FIXME ItemTemplate/Itemに紐づいているものが存在する場合は削除させない
 	return m.repository.RemoveKey(ctx, ID)
