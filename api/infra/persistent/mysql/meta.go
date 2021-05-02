@@ -5,6 +5,7 @@ import (
 	"ao2-y/data-tag-manager/domain/repository"
 	"ao2-y/data-tag-manager/infra/persistent/inmemory"
 	"context"
+	"errors"
 	"fmt"
 	"gorm.io/gorm"
 )
@@ -47,7 +48,7 @@ func (m *metaRepository) FetchByName(ctx context.Context, name string) (*model.M
 	metaKeys := &MetaKeys{}
 	result := m.db.WithContext(ctx).Where("name = ?", name).First(metaKeys)
 	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return nil, repository.NewOperationError(repository.ErrNotFound, nil)
 		}
 		return nil, repository.NewOperationError(repository.ErrUnknown, result.Error)
