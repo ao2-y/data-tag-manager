@@ -5,7 +5,9 @@ import (
 	"go.uber.org/zap"
 )
 
-const Key = "contextLogger"
+type key string
+
+const Key key = "contextLogger"
 
 var appLogger *zap.Logger
 
