@@ -10,4 +10,5 @@ type Resolver struct {
 	ItemUseCase  usecase.Item
 	ItemTemplate usecase.ItemTemplate
 	MetaUseCase  usecase.Meta
+	TagUseCase   usecase.Tag
 }

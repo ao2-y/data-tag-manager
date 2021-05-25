@@ -25,7 +25,7 @@ func main() {
 	router := chi.NewRouter()
 	applogger := logger.InitApplicationLogger()
 	router.Use(middleware.ContextLogger(applogger))
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(injector.NewGraphqlConfig()))
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(injector.NewGraphqlConfig(applogger)))
 
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)

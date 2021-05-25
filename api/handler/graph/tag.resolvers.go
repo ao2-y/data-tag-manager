@@ -10,11 +10,46 @@ import (
 )
 
 func (r *mutationResolver) AddTag(ctx context.Context, input *model.AddTagInput) (*model.AddTagPaylod, error) {
-	panic(fmt.Errorf("not implemented"))
+	var parentID uint
+	var err error
+	if input.ParentID != nil {
+		parentID, err = model.KeyTag.ToInternalID(*input.ParentID)
+		if err != nil {
+			return nil, newGraphqlError("AddTag ParentID validation failed.", err)
+		}
+	}
+	useCaseRet, err := r.TagUseCase.Create(ctx, input.Name, parentID)
+	if err != nil {
+		return nil, newGraphqlError("AddTag operation failed", err)
+	}
+
+	return &model.AddTagPaylod{
+		ClientMutationID: input.ClientMutationID,
+		Tag: &model.Tag{
+			ID:     model.KeyTag.ToExternalID(useCaseRet.ID),
+			Parent: nil,
+			Name:   useCaseRet.Name,
+		},
+	}, nil
 }
 
 func (r *mutationResolver) RemoveTag(ctx context.Context, input *model.RemoveTagInput) (*model.RemoveTagPayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	innerID, err := model.KeyTag.ToInternalID(input.ID)
+	if err != nil {
+		return nil, newGraphqlError("RemoveTag ID validation failed", nil)
+	}
+	useCaseRet, err := r.TagUseCase.Remove(ctx, innerID)
+	if err != nil {
+		return nil, newGraphqlError("RemoveTag operation failed", err)
+	}
+	return &model.RemoveTagPayload{
+		ClientMutationID: input.ClientMutaionID,
+		Tag: &model.Tag{
+			ID:     model.KeyTag.ToExternalID(useCaseRet.ID),
+			Parent: nil,
+			Name:   useCaseRet.Name,
+		},
+	}, nil
 }
 
 func (r *mutationResolver) AddTagToItem(ctx context.Context, input *model.AddTagToItemInput) (*model.AddTagToItemPayload, error) {
