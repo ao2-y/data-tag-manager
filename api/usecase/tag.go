@@ -4,6 +4,7 @@ import (
 	"ao2-y/data-tag-manager/domain/model"
 	"ao2-y/data-tag-manager/domain/repository"
 	"context"
+	"errors"
 )
 
 type Tag interface {
@@ -18,8 +19,45 @@ type tagUseCase struct {
 	repository repository.Tag
 }
 
-func (t *tagUseCase) Create(ctx context.Context, name string, parentID uint) (*model.Tag, error) {
+func (t *tagUseCase) GetByIDWithParent(ctx context.Context, ID uint) (*model.Tag, error) {
 	panic("implement me")
+}
+
+func (t *tagUseCase) Create(ctx context.Context, name string, parentID uint) (*model.Tag, error) {
+
+	if parentID > 0 {
+		// Parentの生存確認
+		_, err := t.repository.FetchByID(ctx, parentID)
+		if err != nil {
+			var opeError *repository.OperationError
+			if errors.As(err, opeError) {
+				switch opeError.Code {
+				case repository.ErrNotFound:
+					return nil, NewValidationError(ValidationTypeExist, "ParentID", parentID, nil)
+				default:
+					return nil, NewInternalServerError("Tag create usecase. get parent failed", err)
+				}
+			}
+			return nil, NewInternalServerError("Tag create usecase. get parent failed", err)
+		}
+	}
+
+	sameNameTags, err := t.repository.FetchByNameWithParentID(ctx, name, parentID)
+	if err != nil {
+		// FIXME errors.Asでやる
+		return nil, NewInternalServerError("Tag create usecase error", err)
+	}
+	if len(sameNameTags) > 0 {
+		// 同名のタグが存在するためエラーで返す
+		return nil, NewValidationError(ValidationTypeDuplicated, "name", name, nil)
+	}
+
+	tag, err := t.repository.Create(ctx, name, parentID)
+	if err != nil {
+		// FIXME errors.Asでやる
+		return nil, NewInternalServerError("Tag create failed", err)
+	}
+	return tag, nil
 }
 
 func (t *tagUseCase) Remove(ctx context.Context, ID uint) (*model.Tag, error) {

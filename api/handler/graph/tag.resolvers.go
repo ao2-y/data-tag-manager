@@ -23,11 +23,22 @@ func (r *mutationResolver) AddTag(ctx context.Context, input *model.AddTagInput)
 		return nil, newGraphqlError("AddTag operation failed", err)
 	}
 
+	var parent *model.Tag
+	if parentID > 0 {
+		parentRet, err := r.TagUseCase.GetByID(ctx, parentID)
+		if err != nil {
+			return nil, newGraphqlError("AddTag get parent failed", err)
+		}
+		parent = &model.Tag{
+			ID:   model.KeyTag.ToExternalID(parentRet.ID),
+			Name: parentRet.Name,
+		}
+	}
 	return &model.AddTagPaylod{
 		ClientMutationID: input.ClientMutationID,
 		Tag: &model.Tag{
 			ID:     model.KeyTag.ToExternalID(useCaseRet.ID),
-			Parent: nil,
+			Parent: parent,
 			Name:   useCaseRet.Name,
 		},
 	}, nil
@@ -42,11 +53,25 @@ func (r *mutationResolver) RemoveTag(ctx context.Context, input *model.RemoveTag
 	if err != nil {
 		return nil, newGraphqlError("RemoveTag operation failed", err)
 	}
+
+	var parent *model.Tag
+	if useCaseRet.ParentTagID > 0 {
+		if useCaseRet.ParentTagID > 0 {
+			parentRet, err := r.TagUseCase.GetByID(ctx, useCaseRet.ParentTagID)
+			if err != nil {
+				return nil, newGraphqlError("AddTag get parent failed", err)
+			}
+			parent = &model.Tag{
+				ID:   model.KeyTag.ToExternalID(parentRet.ID),
+				Name: parentRet.Name,
+			}
+		}
+	}
 	return &model.RemoveTagPayload{
 		ClientMutationID: input.ClientMutaionID,
 		Tag: &model.Tag{
 			ID:     model.KeyTag.ToExternalID(useCaseRet.ID),
-			Parent: nil,
+			Parent: parent,
 			Name:   useCaseRet.Name,
 		},
 	}, nil
@@ -61,5 +86,29 @@ func (r *mutationResolver) RemoveTagToItem(ctx context.Context, input *model.Rem
 }
 
 func (r *queryResolver) Tags(ctx context.Context) ([]*model.Tag, error) {
-	panic(fmt.Errorf("not implemented"))
+	useCaseRet, err := r.TagUseCase.GetAll(ctx)
+	if err != nil {
+		return nil, newGraphqlError("tags operation failed", err)
+	}
+	tags := map[uint]*model.Tag{}
+	for _, v := range useCaseRet {
+		tags[v.ID] = &model.Tag{
+			ID:   model.KeyTag.ToExternalID(v.ID),
+			Name: v.Name,
+		}
+	}
+	// parentをtags内で設定する
+	for _, v := range useCaseRet {
+		if v.ParentTagID > 0 {
+			tags[v.ID].Parent = tags[v.ParentTagID]
+		}
+	}
+	// map to slice
+	retTags := make([]*model.Tag, 0, len(tags))
+	i := 0
+	for _, v := range tags {
+		retTags[i] = v
+		i++
+	}
+	return retTags, nil
 }

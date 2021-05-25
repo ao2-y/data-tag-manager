@@ -6,7 +6,10 @@ import (
 )
 
 type Tag interface {
-	Create(ctx context.Context, name string, parentID *uint) (*model.Tag, error)
+	Create(ctx context.Context, name string, parentID uint) (*model.Tag, error)
 	Remove(ctx context.Context, ID uint) (*model.Tag, error)
 	FetchAll(ctx context.Context) ([]*model.Tag, error)
+	FetchByID(ctx context.Context, ID uint) (*model.Tag, error)
+	FetchByParentID(ctx context.Context, ID uint) ([]*model.Tag, error)
+	FetchByNameWithParentID(ctx context.Context, name string, parentID uint) ([]*model.Tag, error)
 }
