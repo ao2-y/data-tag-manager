@@ -27,8 +27,7 @@ type (
 	Tags struct {
 		ID          uint `gorm:"primaryKey"`
 		Name        string
-		Level       int
-		ParentTagID *uint
+		ParentTagID uint
 		//CreatedAt time.Time
 		//UpdatedAt time.Time
 		//DeletedAt gorm.DeletedAt `gorm:"index"`
@@ -101,5 +100,13 @@ func metaKeyToDomain(key *MetaKeys) *model.MetaKey {
 	return &model.MetaKey{
 		ID:   key.ID,
 		Name: key.Name,
+	}
+}
+
+func tagToDomain(tag *Tags) *model.Tag {
+	return &model.Tag{
+		ID:          tag.ID,
+		Name:        tag.Name,
+		ParentTagID: tag.ParentTagID,
 	}
 }

@@ -13,6 +13,8 @@ const (
 	ValidationTypeDuplicated
 	// ValidationTypeExist 存在チェック
 	ValidationTypeExist
+	// ValidationTypeUsed 他のリソースに依存されている
+	ValidationTypeUsed
 )
 
 type ValidationError struct {
