@@ -54,16 +54,55 @@ func (t *tagUseCase) Create(ctx context.Context, name string, parentID uint) (*m
 
 	tag, err := t.repository.Create(ctx, name, parentID)
 	if err != nil {
-		// FIXME errors.Asでやる
+		var opeError *repository.OperationError
+		if errors.As(err, opeError) {
+			return nil, NewInternalServerError("Tag create usecase. create failed.", err)
+		}
 		return nil, NewInternalServerError("Tag create failed", err)
 	}
 	return tag, nil
 }
 
 func (t *tagUseCase) Remove(ctx context.Context, ID uint) (*model.Tag, error) {
+	_, err := t.repository.FetchByID(ctx, ID)
+	if err != nil {
+		var opeError *repository.OperationError
+		if errors.As(err, opeError) {
+			switch opeError.Code {
+			case repository.ErrNotFound:
+				return nil, NewResourceNorFoundError("Tag")
+			default:
+				return nil, NewInternalServerError("Tag remove usecase. FetchByID failed.", err)
+			}
+		}
+		return nil, NewInternalServerError("Tag remove usecase. FetchByID failed.", err)
+	}
 	// 子が存在するIDは削除させない
-	// Itemに紐づいているIDは削除させない
-	panic("implement me")
+	children, err := t.repository.FetchByParentID(ctx, ID)
+	if err != nil {
+		return nil, NewInternalServerError("Tag remove usecase. FetchByParendID failed.", err)
+	}
+	if len(children) > 0 {
+		return nil, NewValidationError(ValidationTypeUsed, "ID", ID, nil)
+	}
+
+	// TODO FIXME Itemに紐づいているIDは削除させない
+
+	tag, err := t.repository.Remove(ctx, ID)
+	if err != nil {
+		var opeError *repository.OperationError
+		if errors.As(err, opeError) {
+			switch opeError.Code {
+			case repository.ErrNotFound:
+				return nil, NewResourceNorFoundError("Tag")
+			default:
+				return nil, NewInternalServerError("Tag remove usecase. Remove failed.", err)
+			}
+		}
+		return nil, NewInternalServerError("Tag remove usecase. Remove failed.", err)
+	}
+
+	return tag, nil
 }
 
 func (t *tagUseCase) GetAll(ctx context.Context) ([]*model.Tag, error) {
