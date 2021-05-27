@@ -43,7 +43,24 @@ func (t *tagRepository) FetchByID(ctx context.Context, ID uint) (*model.Tag, err
 }
 
 func (t *tagRepository) FetchByParentID(ctx context.Context, ID uint) ([]*model.Tag, error) {
-	panic("implement me")
+	if ID == 0 {
+		// ID==0は親なしなので空Sliceで返す
+		return []*model.Tag{}, nil
+	}
+	if ret := t.cache.Restore(t.cacheKeyParentID(ID)); ret != nil {
+		if tags, ok := ret.([]*model.Tag); ok {
+			return tags, nil
+		}
+	}
+	var tags []*Tags
+	err := t.db.WithContext(ctx).Where("parent_id = ?", ID).Find(&tags).Error
+	if err != nil {
+		return nil, repository.NewOperationError(repository.ErrUnknown, err)
+	}
+
+	modelTags := tagsToDomain(tags)
+	t.cache.Store(t.cacheKeyParentID(ID), modelTags)
+	return modelTags, nil
 }
 
 func (t *tagRepository) FetchByNameWithParentID(ctx context.Context, name string, parentID uint) ([]*model.Tag, error) {
@@ -51,7 +68,26 @@ func (t *tagRepository) FetchByNameWithParentID(ctx context.Context, name string
 }
 
 func (t *tagRepository) Remove(ctx context.Context, ID uint) (*model.Tag, error) {
-	panic("implement me")
+	tag := &Tags{ID: ID}
+	tx := t.db.WithContext(ctx).Begin()
+	err := tx.WithContext(ctx).Set("gorm:query_option", "FOR UPDATE").First(tag).Error
+	if err != nil {
+		tx.WithContext(ctx).Rollback()
+		return nil, repository.NewOperationError(repository.ErrUnknown, err)
+	}
+
+	// Cache削除
+	t.cache.Delete(t.cacheKeyID(ID))
+	t.cache.Delete(t.cacheKeyName(tag.Name))
+
+	err = tx.WithContext(ctx).Delete(tag).Error
+	if err != nil {
+		tx.WithContext(ctx).Rollback()
+		return nil, repository.NewOperationError(repository.ErrUnknown, err)
+	}
+
+	tx.WithContext(ctx).Commit()
+	return tagToDomain(tag), nil
 }
 
 func (t *tagRepository) FetchAll(ctx context.Context) ([]*model.Tag, error) {
@@ -73,4 +109,12 @@ func NewTagRepository(db *gorm.DB, isLocalCacheEnabled bool) repository.Tag {
 
 func (t *tagRepository) cacheKeyID(iD uint) string {
 	return fmt.Sprintf("TagID:%v", iD)
+}
+
+func (t *tagRepository) cacheKeyParentID(iD uint) string {
+	return fmt.Sprintf("TagParentID:%v", iD)
+}
+
+func (t *tagRepository) cacheKeyName(name string) string {
+	return fmt.Sprintf("TagName:%s", name)
 }

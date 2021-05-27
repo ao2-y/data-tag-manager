@@ -110,3 +110,11 @@ func tagToDomain(tag *Tags) *model.Tag {
 		ParentTagID: tag.ParentTagID,
 	}
 }
+
+func tagsToDomain(tags []*Tags) []*model.Tag {
+	ret := make([]*model.Tag, 0, len(tags))
+	for i, v := range tags {
+		ret[i] = tagToDomain(v)
+	}
+	return ret
+}
