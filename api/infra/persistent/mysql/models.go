@@ -112,7 +112,7 @@ func tagToDomain(tag *Tags) *model.Tag {
 }
 
 func tagsToDomain(tags []*Tags) []*model.Tag {
-	ret := make([]*model.Tag, 0, len(tags))
+	ret := make([]*model.Tag, len(tags), len(tags))
 	for i, v := range tags {
 		ret[i] = tagToDomain(v)
 	}

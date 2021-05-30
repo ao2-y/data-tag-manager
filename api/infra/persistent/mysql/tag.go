@@ -5,6 +5,7 @@ import (
 	"ao2-y/data-tag-manager/domain/repository"
 	"ao2-y/data-tag-manager/infra/persistent/inmemory"
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
@@ -16,7 +17,27 @@ type tagRepository struct {
 }
 
 func (t *tagRepository) Create(ctx context.Context, name string, parentID uint) (*model.Tag, error) {
-	panic("implement me")
+	tag := &Tags{
+		Name:        name,
+		ParentTagID: parentID,
+	}
+	err := t.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		err := tx.WithContext(ctx).Create(tag).Error
+		if err != nil {
+			return repository.NewOperationError(repository.ErrUnknown, err)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	modelTag := tagToDomain(tag)
+	t.cache.Store(t.cacheKeyID(modelTag.ID), modelTag)
+	t.cache.Store(t.cacheKeyName(modelTag.Name), modelTag)
+	// TODO FIXME ParentIDに関しては同じParentIDを持っている群をキャッシュしているので読みなおし処理必要
+	// 暫定で同じparentIDを持つキャッシュを削除
+	t.cache.Delete(t.cacheKeyParentID(modelTag.ParentTagID))
+	return modelTag, nil
 }
 
 func (t *tagRepository) FetchByID(ctx context.Context, ID uint) (*model.Tag, error) {
@@ -53,7 +74,7 @@ func (t *tagRepository) FetchByParentID(ctx context.Context, ID uint) ([]*model.
 		}
 	}
 	var tags []*Tags
-	err := t.db.WithContext(ctx).Where("parent_id = ?", ID).Find(&tags).Error
+	err := t.db.WithContext(ctx).Where("parent_tag_id = ?", ID).Find(&tags).Error
 	if err != nil {
 		return nil, repository.NewOperationError(repository.ErrUnknown, err)
 	}
@@ -64,7 +85,19 @@ func (t *tagRepository) FetchByParentID(ctx context.Context, ID uint) ([]*model.
 }
 
 func (t *tagRepository) FetchByNameWithParentID(ctx context.Context, name string, parentID uint) ([]*model.Tag, error) {
-	panic("implement me")
+	// キャッシュから検索しにくいのでキャッシュ見ない
+	var tags []*Tags
+	err := t.db.WithContext(ctx).Where("parent_tag_id = @parent and name = @name", sql.NamedArg{
+		Name:  "parent",
+		Value: parentID,
+	}, sql.NamedArg{
+		Name:  "name",
+		Value: name,
+	}).Find(&tags).Error
+	if err != nil {
+		return nil, repository.NewOperationError(repository.ErrUnknown, err)
+	}
+	return tagsToDomain(tags), nil
 }
 
 func (t *tagRepository) Remove(ctx context.Context, ID uint) (*model.Tag, error) {
@@ -91,7 +124,13 @@ func (t *tagRepository) Remove(ctx context.Context, ID uint) (*model.Tag, error)
 }
 
 func (t *tagRepository) FetchAll(ctx context.Context) ([]*model.Tag, error) {
-	panic("implement me")
+	var tags []*Tags
+	err := t.db.WithContext(ctx).Find(&tags).Error
+	if err != nil {
+		return nil, repository.NewOperationError(repository.ErrUnknown, err)
+	}
+	modelTags := tagsToDomain(tags)
+	return modelTags, nil
 }
 
 func NewTagRepository(db *gorm.DB, isLocalCacheEnabled bool) repository.Tag {

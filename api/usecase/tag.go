@@ -27,7 +27,7 @@ func (t *tagUseCase) Create(ctx context.Context, name string, parentID uint) (*m
 
 	if parentID > 0 {
 		// Parentの生存確認
-		_, err := t.repository.FetchByID(ctx, parentID)
+		parent, err := t.repository.FetchByID(ctx, parentID)
 		if err != nil {
 			var opeError *repository.OperationError
 			if errors.As(err, opeError) {
@@ -39,6 +39,10 @@ func (t *tagUseCase) Create(ctx context.Context, name string, parentID uint) (*m
 				}
 			}
 			return nil, NewInternalServerError("Tag create usecase. get parent failed", err)
+		}
+		if parent.ParentTagID > 0 {
+			// ParentにしたいTagが子。孫は作れない。
+			return nil, NewValidationError(ValidationTypeIsChild, "ParentID", parentID, nil)
 		}
 	}
 
@@ -110,7 +114,18 @@ func (t *tagUseCase) GetAll(ctx context.Context) ([]*model.Tag, error) {
 }
 
 func (t *tagUseCase) GetByID(ctx context.Context, ID uint) (*model.Tag, error) {
-	panic("implement me")
+	tag, err := t.repository.FetchByID(ctx, ID)
+	if err != nil {
+		var opeError *repository.OperationError
+		if errors.As(err, opeError) {
+			switch opeError.Code {
+			case repository.ErrNotFound:
+				return nil, NewResourceNorFoundError("Tag")
+			}
+		}
+		return nil, NewInternalServerError("Tag GetByID usecase failed.", err)
+	}
+	return tag, nil
 }
 
 func NewTagUseCase(repository repository.Tag) Tag {
