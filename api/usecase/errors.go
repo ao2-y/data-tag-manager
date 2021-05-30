@@ -15,6 +15,8 @@ const (
 	ValidationTypeExist
 	// ValidationTypeUsed 他のリソースに依存されている
 	ValidationTypeUsed
+	// ValidationTypeIsChild 子要素だった
+	ValidationTypeIsChild
 )
 
 type ValidationError struct {
