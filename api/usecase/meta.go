@@ -14,6 +14,7 @@ type Meta interface {
 	UpdateKey(ctx context.Context, ID uint, name string) (*model.MetaKey, error)
 	RemoveKey(ctx context.Context, ID uint) (*model.MetaKey, error)
 	FetchKeyByID(ctx context.Context, ID uint) (*model.MetaKey, error)
+	FetchAll(ctx context.Context) ([]*model.MetaKey, error)
 }
 
 type metaUseCase struct {
@@ -31,6 +32,14 @@ func (m *metaUseCase) FetchKeyByID(ctx context.Context, ID uint) (*model.MetaKey
 			}
 		}
 		return nil, NewInternalServerError("MetaRepository.FetchKeyByID return unknown error.", err)
+	}
+	return ret, nil
+}
+
+func (m *metaUseCase) FetchAll(ctx context.Context) ([]*model.MetaKey, error) {
+	ret, err := m.repository.FetchAll(ctx)
+	if err != nil {
+		return nil, NewInternalServerError("MetaUseCase FetchAll failed.", err)
 	}
 	return ret, nil
 }

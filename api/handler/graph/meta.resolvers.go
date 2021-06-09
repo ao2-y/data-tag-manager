@@ -68,5 +68,16 @@ func (r *mutationResolver) RemoveMetaToItem(ctx context.Context, input *model.Re
 }
 
 func (r *queryResolver) MetaKeys(ctx context.Context) ([]*model.MetaKey, error) {
-	panic(fmt.Errorf("not implemented"))
+	useCaseRet, err := r.MetaUseCase.FetchAll(ctx)
+	if err != nil {
+		return nil, newGraphqlError("MetaKeys operation failed", err)
+	}
+	ret := make([]*model.MetaKey, len(useCaseRet), len(useCaseRet))
+	for i, v := range useCaseRet {
+		ret[i] = &model.MetaKey{
+			ID:   model.KeyMeta.ToExternalID(v.ID),
+			Name: v.Name,
+		}
+	}
+	return ret, nil
 }
