@@ -110,7 +110,11 @@ func (t *tagUseCase) Remove(ctx context.Context, ID uint) (*model.Tag, error) {
 }
 
 func (t *tagUseCase) GetAll(ctx context.Context) ([]*model.Tag, error) {
-	panic("implement me")
+	tags, err := t.repository.FetchAll(ctx)
+	if err != nil {
+		return nil, NewInternalServerError("TagUseCase GetAll operation failed.", err)
+	}
+	return tags, nil
 }
 
 func (t *tagUseCase) GetByID(ctx context.Context, ID uint) (*model.Tag, error) {

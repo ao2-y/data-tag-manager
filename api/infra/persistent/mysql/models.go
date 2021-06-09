@@ -104,7 +104,7 @@ func metaKeyToDomain(key *MetaKeys) *model.MetaKey {
 }
 
 func metaKeysToDomain(keys []*MetaKeys) []*model.MetaKey {
-	ret := make([]*model.MetaKey, 0, len(keys))
+	ret := make([]*model.MetaKey, len(keys), len(keys))
 	for i, v := range keys {
 		ret[i] = metaKeyToDomain(v)
 	}

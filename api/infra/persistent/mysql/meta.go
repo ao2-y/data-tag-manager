@@ -137,6 +137,15 @@ func (m *metaRepository) RemoveKey(ctx context.Context, ID uint) (*model.MetaKey
 	return metaKeyToDomain(metaKey), nil
 }
 
+func (m *metaRepository) FetchAll(ctx context.Context) ([]*model.MetaKey, error) {
+	var metaKeys []*MetaKeys
+	err := m.db.WithContext(ctx).Find(&metaKeys).Error
+	if err != nil {
+		return nil, repository.NewOperationError(repository.ErrUnknown, err)
+	}
+	return metaKeysToDomain(metaKeys), nil
+}
+
 func (m *metaRepository) cacheKeyID(iD uint) string {
 	return fmt.Sprintf("MetaKeyID:%v", iD)
 }

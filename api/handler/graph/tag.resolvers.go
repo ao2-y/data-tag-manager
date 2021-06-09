@@ -104,7 +104,7 @@ func (r *queryResolver) Tags(ctx context.Context) ([]*model.Tag, error) {
 		}
 	}
 	// map to slice
-	retTags := make([]*model.Tag, 0, len(tags))
+	retTags := make([]*model.Tag, len(tags), len(tags))
 	i := 0
 	for _, v := range tags {
 		retTags[i] = v
