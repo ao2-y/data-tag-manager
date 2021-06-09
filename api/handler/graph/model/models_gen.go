@@ -231,7 +231,7 @@ type UpdateItemTemplateMetaKeysInput struct {
 type UpdateItemTemplateNameInput struct {
 	ClientMutationID *string `json:"clientMutationId"`
 	ItemTemplateID   string  `json:"itemTemplateId"`
-	Name             *string `json:"name"`
+	Name             string  `json:"name"`
 }
 
 type UpdateItemTemplatePayload struct {

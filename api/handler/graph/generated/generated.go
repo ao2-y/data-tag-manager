@@ -1066,7 +1066,7 @@ type AddItemTemplatePayload {
 input UpdateItemTemplateNameInput {
     clientMutationId: String
     itemTemplateId: ID!
-    name:String
+    name:String!
 }
 
 type UpdateItemTemplatePayload {
@@ -5905,7 +5905,7 @@ func (ec *executionContext) unmarshalInputUpdateItemTemplateNameInput(ctx contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

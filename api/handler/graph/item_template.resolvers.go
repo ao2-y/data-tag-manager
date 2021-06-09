@@ -43,7 +43,31 @@ func (r *mutationResolver) AddItemTemplate(ctx context.Context, input *model.Add
 }
 
 func (r *mutationResolver) UpdateItemTemplateName(ctx context.Context, input *model.UpdateItemTemplateNameInput) (*model.UpdateItemTemplatePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	uintId, err := model.KeyItemTemplate.ToInternalID(input.ItemTemplateID)
+	if err != nil {
+		return nil, newGraphqlError("ID format error", err)
+	}
+	ret, err := r.ItemTemplate.UpdateName(ctx, uintId, input.Name)
+	if err != nil {
+		return nil, newGraphqlError("UpdateName failed", err)
+	}
+	metaKeys := make([]*model.MetaKey, len(ret.MetaKeys), len(ret.MetaKeys))
+	for i, v := range ret.MetaKeys {
+		metaKey := &model.MetaKey{
+			ID:   model.KeyMeta.ToExternalID(v.ID),
+			Name: v.Name,
+		}
+		metaKeys[i] = metaKey
+	}
+	retItemTemplate := &model.ItemTemplate{
+		ID:       model.KeyItemTemplate.ToExternalID(ret.ID),
+		Name:     ret.Name,
+		MetaKeys: metaKeys,
+	}
+	return &model.UpdateItemTemplatePayload{
+		ClientMutationID: input.ClientMutationID,
+		ItemTemplate:     retItemTemplate,
+	}, nil
 }
 
 func (r *mutationResolver) UpdateItemTemplateMetaKeys(ctx context.Context, input *model.UpdateItemTemplateMetaKeysInput) (*model.UpdateItemTemplatePayload, error) {

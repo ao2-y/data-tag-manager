@@ -29,7 +29,7 @@ type AddItemTemplatePayload {
 input UpdateItemTemplateNameInput {
     clientMutationId: String
     itemTemplateId: ID!
-    name:String
+    name:String!
 }
 
 type UpdateItemTemplatePayload {
