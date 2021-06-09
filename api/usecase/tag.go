@@ -12,15 +12,41 @@ type Tag interface {
 	Remove(ctx context.Context, ID uint) (*model.Tag, error)
 	GetAll(ctx context.Context) ([]*model.Tag, error)
 	GetByID(ctx context.Context, ID uint) (*model.Tag, error)
-	GetByIDWithParent(ctx context.Context, ID uint) (*model.Tag, error)
+	GetByIDWithParent(ctx context.Context, ID uint) (*model.TagWithParent, error)
 }
 
 type tagUseCase struct {
 	repository repository.Tag
 }
 
-func (t *tagUseCase) GetByIDWithParent(ctx context.Context, ID uint) (*model.Tag, error) {
-	panic("implement me")
+func (t *tagUseCase) GetByIDWithParent(ctx context.Context, ID uint) (*model.TagWithParent, error) {
+	tag, err := t.repository.FetchByID(ctx, ID)
+	if err != nil {
+		var opeError *repository.OperationError
+		if errors.As(err, opeError) {
+			switch opeError.Code {
+			case repository.ErrNotFound:
+				return nil, NewResourceNorFoundError("Tag")
+			}
+		}
+		return nil, NewInternalServerError("TagUseCase GetByIDWithParent failed", err)
+	}
+	var parentTag *model.Tag
+	if tag.ParentTagID > 0 {
+		p, err := t.repository.FetchByID(ctx, tag.ParentTagID)
+		if err != nil {
+			return nil, NewInternalServerError("TagUseCase Parent Fetch failed", err)
+		}
+		parentTag = p
+	}
+	return &model.TagWithParent{
+		Tag: model.Tag{
+			ID:          tag.ID,
+			Name:        tag.Name,
+			ParentTagID: tag.ParentTagID,
+		},
+		Parent: parentTag,
+	}, nil
 }
 
 func (t *tagUseCase) Create(ctx context.Context, name string, parentID uint) (*model.Tag, error) {

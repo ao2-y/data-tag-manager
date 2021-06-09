@@ -21,7 +21,7 @@ type (
 	// TagWithParent 親の情報も持っている
 	TagWithParent struct {
 		Tag
-		parent *Tag
+		Parent *Tag
 	}
 	// Meta 属性情報
 	Meta struct {

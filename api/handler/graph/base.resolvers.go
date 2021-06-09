@@ -39,7 +39,23 @@ func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error)
 	case model.KeyItem:
 		return nil, fmt.Errorf("item not implement")
 	case model.KeyTag:
-		return nil, fmt.Errorf("tag not implement")
+		ret, err := r.TagUseCase.GetByIDWithParent(ctx, uintId)
+		if err != nil {
+			return nil, newGraphqlError("Tag FetchByID Failed.", err)
+		}
+		var parentTag *model.Tag
+		if ret.Parent != nil {
+			parentTag = &model.Tag{
+				ID:     model.KeyTag.ToExternalID(ret.Parent.ID),
+				Parent: nil,
+				Name:   ret.Parent.Name,
+			}
+		}
+		return &model.Tag{
+			ID:     model.KeyTag.ToExternalID(ret.ID),
+			Parent: parentTag,
+			Name:   ret.Name,
+		}, nil
 	case model.KeyMeta:
 		ret, err := r.MetaUseCase.FetchKeyByID(ctx, uintId)
 		if err != nil {
