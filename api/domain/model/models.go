@@ -37,6 +37,6 @@ type (
 	ItemTemplate struct {
 		ID       uint
 		Name     string
-		MetaKeys []MetaKey
+		MetaKeys []*MetaKey
 	}
 )

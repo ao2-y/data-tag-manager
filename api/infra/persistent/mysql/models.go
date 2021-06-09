@@ -49,7 +49,7 @@ type (
 		//CreatedAt time.Time
 		//UpdatedAt time.Time
 		//DeletedAt gorm.DeletedAt `gorm:"index"`
-		MetaKeys []ItemTemplateMetaKeys `gorm:"foreignKey:ItemTemplateID"`
+		MetaKeys []*ItemTemplateMetaKeys `gorm:"foreignKey:ItemTemplateID"`
 	}
 
 	ItemTemplateMetaKeys struct {
@@ -73,24 +73,24 @@ func itemToDomain(item Items) model.Item {
 	}
 }
 
-func itemTemplateToDomain(template ItemTemplates) model.ItemTemplate {
-	return model.ItemTemplate{
+func itemTemplateToDomain(template *ItemTemplates) *model.ItemTemplate {
+	return &model.ItemTemplate{
 		ID:       template.ID,
 		Name:     template.Name,
-		MetaKeys: metaKeysToDomain(template.MetaKeys),
+		MetaKeys: itemTemplateMetaKeysToDomain(template.MetaKeys),
 	}
 }
 
-func metaKeysToDomain(keys []ItemTemplateMetaKeys) []model.MetaKey {
-	ret := make([]model.MetaKey, 0, len(keys))
+func itemTemplateMetaKeysToDomain(keys []ItemTemplateMetaKeys) []*model.MetaKey {
+	ret := make([]*model.MetaKey, 0, len(keys))
 	for i, v := range keys {
 		ret[i] = itemTemplateMetaKeyToDomain(v)
 	}
 	return ret
 }
 
-func itemTemplateMetaKeyToDomain(key ItemTemplateMetaKeys) model.MetaKey {
-	return model.MetaKey{
+func itemTemplateMetaKeyToDomain(key ItemTemplateMetaKeys) *model.MetaKey {
+	return &model.MetaKey{
 		ID:   key.MetaKeys.ID,
 		Name: key.MetaKeys.Name,
 	}
@@ -101,6 +101,14 @@ func metaKeyToDomain(key *MetaKeys) *model.MetaKey {
 		ID:   key.ID,
 		Name: key.Name,
 	}
+}
+
+func metaKeysToDomain(keys []*MetaKeys) []*model.MetaKey {
+	ret := make([]*model.MetaKey, 0, len(keys))
+	for i, v := range keys {
+		ret[i] = metaKeyToDomain(v)
+	}
+	return ret
 }
 
 func tagToDomain(tag *Tags) *model.Tag {

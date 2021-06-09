@@ -12,5 +12,5 @@ type Meta interface {
 	RemoveKey(ctx context.Context, ID uint) (*model.MetaKey, error)
 	FetchByName(ctx context.Context, name string) (*model.MetaKey, error)
 	FetchByID(ctx context.Context, ID uint) (*model.MetaKey, error)
-	//FetchByIDs(ctx context.Context, IDs ...uint) ([]*model.MetaKey, error)
+	FetchByIDs(ctx context.Context, IDs []*uint) ([]*model.MetaKey, error)
 }

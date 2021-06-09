@@ -15,6 +15,16 @@ type metaRepository struct {
 	cache inmemory.Cache
 }
 
+func (m *metaRepository) FetchByIDs(ctx context.Context, IDs []*uint) ([]*model.MetaKey, error) {
+	// TODO とりあえずキャッシュ見てない
+	var metas []*MetaKeys
+	err := m.db.WithContext(ctx).Where("ID IN ?", IDs).Find(&metas).Error
+	if err != nil {
+		return nil, repository.NewOperationError(repository.ErrUnknown, err)
+	}
+	return metaKeysToDomain(metas), nil
+}
+
 func (m *metaRepository) FetchByID(ctx context.Context, iD uint) (*model.MetaKey, error) {
 	if ret := m.cache.Restore(m.cacheKeyID(iD)); ret != nil {
 		if meta, ok := ret.(*model.MetaKey); ok {
