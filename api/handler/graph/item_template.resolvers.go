@@ -55,5 +55,24 @@ func (r *mutationResolver) RemoveItemTemplate(ctx context.Context, input *model.
 }
 
 func (r *queryResolver) ItemTemplates(ctx context.Context) ([]*model.ItemTemplate, error) {
-	panic(fmt.Errorf("not implemented"))
+	its, err := r.ItemTemplate.FetchAll(ctx)
+	if err != nil {
+		return nil, newGraphqlError("ItemTemplates failed", err)
+	}
+	ret := make([]*model.ItemTemplate, len(its), len(its))
+	for i, v := range its {
+		metaKeys := make([]*model.MetaKey, len(v.MetaKeys), len(v.MetaKeys))
+		for i2, v2 := range v.MetaKeys {
+			metaKeys[i2] = &model.MetaKey{
+				ID:   model.KeyMeta.ToExternalID(v2.ID),
+				Name: v2.Name,
+			}
+		}
+		ret[i] = &model.ItemTemplate{
+			ID:       model.KeyItemTemplate.ToExternalID(v.ID),
+			Name:     v.Name,
+			MetaKeys: metaKeys,
+		}
+	}
+	return ret, nil
 }

@@ -24,7 +24,12 @@ func (i *itemTemplate) Remove(ctx context.Context, ID uint) (*model.ItemTemplate
 }
 
 func (i *itemTemplate) FetchAll(ctx context.Context) ([]*model.ItemTemplate, error) {
-	panic("implement me")
+	var its []*ItemTemplates
+	err := i.db.WithContext(ctx).Preload("MetaKeys").Preload("MetaKeys.MetaKeys").Find(&its).Error
+	if err != nil {
+		return nil, repository.NewOperationError(repository.ErrUnknown, err)
+	}
+	return itemTemplatesToDomain(its), nil
 }
 
 func (i *itemTemplate) Create(ctx context.Context, name string, metaKeyIDs []*uint) (*model.ItemTemplate, error) {

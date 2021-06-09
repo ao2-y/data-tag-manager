@@ -73,6 +73,14 @@ func itemToDomain(item Items) model.Item {
 	}
 }
 
+func itemTemplatesToDomain(templates []*ItemTemplates) []*model.ItemTemplate {
+	ret := make([]*model.ItemTemplate, len(templates), len(templates))
+	for i, v := range templates {
+		ret[i] = itemTemplateToDomain(v)
+	}
+	return ret
+}
+
 func itemTemplateToDomain(template *ItemTemplates) *model.ItemTemplate {
 	return &model.ItemTemplate{
 		ID:       template.ID,
@@ -82,7 +90,7 @@ func itemTemplateToDomain(template *ItemTemplates) *model.ItemTemplate {
 }
 
 func itemTemplateMetaKeysToDomain(keys []*ItemTemplateMetaKeys) []*model.MetaKey {
-	ret := make([]*model.MetaKey, 0, len(keys))
+	ret := make([]*model.MetaKey, len(keys), len(keys))
 	for i, v := range keys {
 		ret[i] = itemTemplateMetaKeyToDomain(v)
 	}

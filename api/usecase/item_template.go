@@ -33,7 +33,11 @@ type itemTemplate struct {
 }
 
 func (i *itemTemplate) FetchAll(ctx context.Context) ([]*model.ItemTemplate, error) {
-	panic("implement me")
+	its, err := i.itemTemplateRepository.FetchAll(ctx)
+	if err != nil {
+		return nil, NewInternalServerError("ItemTemplate FetchAll failed", err)
+	}
+	return its, nil
 }
 
 func (i *itemTemplate) FetchByID(ctx context.Context, ID uint) (*model.ItemTemplate, error) {

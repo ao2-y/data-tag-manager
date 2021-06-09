@@ -31,10 +31,17 @@ func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error)
 		if err != nil {
 			return nil, fmt.Errorf("ItemTemplate FetchByID Failed.%w", err)
 		}
+		metaKeys := make([]*model.MetaKey, len(it.MetaKeys), len(it.MetaKeys))
+		for i, v := range it.MetaKeys {
+			metaKeys[i] = &model.MetaKey{
+				ID:   model.KeyMeta.ToExternalID(v.ID),
+				Name: v.Name,
+			}
+		}
 		return &model.ItemTemplate{
 			ID:       model.KeyItemTemplate.ToExternalID(it.ID),
 			Name:     it.Name,
-			MetaKeys: nil, // TODO
+			MetaKeys: metaKeys,
 		}, nil
 	case model.KeyItem:
 		return nil, fmt.Errorf("item not implement")
