@@ -19,7 +19,7 @@ func NewGraphqlConfig(logger *zap.Logger) generated.Config {
 		config.Database.DatabaseName,
 	)
 	metaRepository := mysql.NewMetaRepository(dbCon, true)
-	itemTemplateRepository := mysql.NewItemTemplateRepository(dbCon)
+	itemTemplateRepository := mysql.NewItemTemplateRepository(dbCon, true)
 	itemUseCase := usecase.NewItemUseCase()
 	itemTemplateUseCase := usecase.NewItemTemplateUseCase(itemTemplateRepository, metaRepository)
 	metaUseCase := usecase.NewMetaUseCase(metaRepository)
