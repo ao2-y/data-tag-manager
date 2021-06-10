@@ -17,14 +17,14 @@ func (r *mutationResolver) AddMetaKey(ctx context.Context, input *model.AddMetaK
 	return &model.AddMetaKeyPayload{
 		ClientMutationID: input.ClientMutationID,
 		MetaKey: &model.MetaKey{
-			ID:   model.KeyMeta.ToExternalID(useCaseRet.ID),
+			ID:   model.IDTypeMeta.ToExternalID(useCaseRet.ID),
 			Name: useCaseRet.Name,
 		},
 	}, nil
 }
 
 func (r *mutationResolver) UpdateMetaKey(ctx context.Context, input *model.UpdateMetaKeyInput) (*model.UpdateMetaKeyPayload, error) {
-	innerID, err := model.KeyMeta.ToInternalID(input.ID)
+	innerID, err := model.IDTypeMeta.ToInternalID(input.ID)
 	if err != nil {
 		return nil, newGraphqlError("UpdateMetaKey ID validation failed.", nil)
 	}
@@ -35,14 +35,14 @@ func (r *mutationResolver) UpdateMetaKey(ctx context.Context, input *model.Updat
 	return &model.UpdateMetaKeyPayload{
 		ClientMutationID: input.ClientMutationID,
 		MetaKey: &model.MetaKey{
-			ID:   model.KeyMeta.ToExternalID(useCaseRet.ID),
+			ID:   model.IDTypeMeta.ToExternalID(useCaseRet.ID),
 			Name: useCaseRet.Name,
 		},
 	}, nil
 }
 
 func (r *mutationResolver) RemoveMetaKey(ctx context.Context, input *model.RemoveMetaKeyInput) (*model.RemoveMetaKeyPayload, error) {
-	innerID, err := model.KeyMeta.ToInternalID(input.ID)
+	innerID, err := model.IDTypeMeta.ToInternalID(input.ID)
 	if err != nil {
 		return nil, newGraphqlError("RemoveMetaKey ID validation failed.", nil)
 	}
@@ -53,7 +53,7 @@ func (r *mutationResolver) RemoveMetaKey(ctx context.Context, input *model.Remov
 	return &model.RemoveMetaKeyPayload{
 		ClientMutationID: input.ClientMutationID,
 		MetaKey: &model.MetaKey{
-			ID:   model.KeyMeta.ToExternalID(useCaseRet.ID),
+			ID:   model.IDTypeMeta.ToExternalID(useCaseRet.ID),
 			Name: useCaseRet.Name,
 		},
 	}, nil
@@ -75,7 +75,7 @@ func (r *queryResolver) MetaKeys(ctx context.Context) ([]*model.MetaKey, error) 
 	ret := make([]*model.MetaKey, len(useCaseRet), len(useCaseRet))
 	for i, v := range useCaseRet {
 		ret[i] = &model.MetaKey{
-			ID:   model.KeyMeta.ToExternalID(v.ID),
+			ID:   model.IDTypeMetaKey.ToExternalID(v.ID),
 			Name: v.Name,
 		}
 	}

@@ -13,7 +13,7 @@ func (r *mutationResolver) AddTag(ctx context.Context, input *model.AddTagInput)
 	var parentID uint
 	var err error
 	if input.ParentID != nil {
-		parentID, err = model.KeyTag.ToInternalID(*input.ParentID)
+		parentID, err = model.IDTypeTag.ToInternalID(*input.ParentID)
 		if err != nil {
 			return nil, newGraphqlError("AddTag ParentID validation failed.", err)
 		}
@@ -30,14 +30,14 @@ func (r *mutationResolver) AddTag(ctx context.Context, input *model.AddTagInput)
 			return nil, newGraphqlError("AddTag get parent failed", err)
 		}
 		parent = &model.Tag{
-			ID:   model.KeyTag.ToExternalID(parentRet.ID),
+			ID:   model.IDTypeTag.ToExternalID(parentRet.ID),
 			Name: parentRet.Name,
 		}
 	}
 	return &model.AddTagPaylod{
 		ClientMutationID: input.ClientMutationID,
 		Tag: &model.Tag{
-			ID:     model.KeyTag.ToExternalID(useCaseRet.ID),
+			ID:     model.IDTypeTag.ToExternalID(useCaseRet.ID),
 			Parent: parent,
 			Name:   useCaseRet.Name,
 		},
@@ -45,7 +45,7 @@ func (r *mutationResolver) AddTag(ctx context.Context, input *model.AddTagInput)
 }
 
 func (r *mutationResolver) RemoveTag(ctx context.Context, input *model.RemoveTagInput) (*model.RemoveTagPayload, error) {
-	innerID, err := model.KeyTag.ToInternalID(input.ID)
+	innerID, err := model.IDTypeTag.ToInternalID(input.ID)
 	if err != nil {
 		return nil, newGraphqlError("RemoveTag ID validation failed", nil)
 	}
@@ -62,7 +62,7 @@ func (r *mutationResolver) RemoveTag(ctx context.Context, input *model.RemoveTag
 				return nil, newGraphqlError("AddTag get parent failed", err)
 			}
 			parent = &model.Tag{
-				ID:   model.KeyTag.ToExternalID(parentRet.ID),
+				ID:   model.IDTypeTag.ToExternalID(parentRet.ID),
 				Name: parentRet.Name,
 			}
 		}
@@ -70,7 +70,7 @@ func (r *mutationResolver) RemoveTag(ctx context.Context, input *model.RemoveTag
 	return &model.RemoveTagPayload{
 		ClientMutationID: input.ClientMutaionID,
 		Tag: &model.Tag{
-			ID:     model.KeyTag.ToExternalID(useCaseRet.ID),
+			ID:     model.IDTypeTag.ToExternalID(useCaseRet.ID),
 			Parent: parent,
 			Name:   useCaseRet.Name,
 		},
@@ -93,7 +93,7 @@ func (r *queryResolver) Tags(ctx context.Context) ([]*model.Tag, error) {
 	tags := map[uint]*model.Tag{}
 	for _, v := range useCaseRet {
 		tags[v.ID] = &model.Tag{
-			ID:   model.KeyTag.ToExternalID(v.ID),
+			ID:   model.IDTypeTag.ToExternalID(v.ID),
 			Name: v.Name,
 		}
 	}

@@ -10,28 +10,28 @@ func TestIDtoKeyNameAndInternalID(t *testing.T) {
 		name    string
 		args    args
 		want    uint
-		want1   KeyType
+		want1   IDType
 		wantErr bool
 	}{
 		{
 			name:    "正常：ItemTemplate",
 			args:    args{ID: "ItemTemplate:1"},
 			want:    uint(1),
-			want1:   KeyItemTemplate,
+			want1:   IDTypeItemTemplate,
 			wantErr: false,
 		},
 		{
 			name:    "異常：ItemTemplate：数値以外のInternalID",
 			args:    args{ID: "ItemTemplate:hoge"},
 			want:    uint(0),
-			want1:   KeyUnknown,
+			want1:   IDTypeUnknown,
 			wantErr: true,
 		},
 		{
 			name:    "異常：存在しないKeyType",
 			args:    args{ID: "Hoge:10"},
 			want:    uint(0),
-			want1:   KeyUnknown,
+			want1:   IDTypeUnknown,
 			wantErr: true,
 		},
 	}
@@ -58,7 +58,7 @@ func TestKeyType_ToExternalID(t *testing.T) {
 	}
 	tests := []struct {
 		name string
-		key  KeyType
+		key  IDType
 		args args
 		want string
 	}{
@@ -79,7 +79,7 @@ func TestKeyType_ToExternalID(t *testing.T) {
 //	}
 //	tests := []struct {
 //		name string
-//		key  KeyType
+//		key  IDType
 //		args args
 //		want uint
 //	}{

@@ -25,9 +25,9 @@ func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error)
 		return nil, fmt.Errorf("ID type error:%w", err)
 	}
 	switch keyType {
-	case model.KeyUnknown:
+	case model.IDTypeUnknown:
 		return nil, fmt.Errorf("ID type unkown")
-	case model.KeyItemTemplate:
+	case model.IDTypeItemTemplate:
 		it, err := r.ItemTemplate.FetchByID(ctx, uintId)
 		if err != nil {
 			return nil, fmt.Errorf("ItemTemplate FetchByID Failed.%w", err)
@@ -35,18 +35,18 @@ func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error)
 		metaKeys := make([]*model.MetaKey, len(it.MetaKeys), len(it.MetaKeys))
 		for i, v := range it.MetaKeys {
 			metaKeys[i] = &model.MetaKey{
-				ID:   model.KeyMeta.ToExternalID(v.ID),
+				ID:   model.IDTypeMeta.ToExternalID(v.ID),
 				Name: v.Name,
 			}
 		}
 		return &model.ItemTemplate{
-			ID:       model.KeyItemTemplate.ToExternalID(it.ID),
+			ID:       model.IDTypeItemTemplate.ToExternalID(it.ID),
 			Name:     it.Name,
 			MetaKeys: metaKeys,
 		}, nil
-	case model.KeyItem:
+	case model.IDTypeItem:
 		return nil, fmt.Errorf("item not implement")
-	case model.KeyTag:
+	case model.IDTypeTag:
 		ret, err := r.TagUseCase.GetByIDWithParent(ctx, uintId)
 		if err != nil {
 			return nil, newGraphqlError("Tag FetchByID Failed.", err)
@@ -54,23 +54,23 @@ func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error)
 		var parentTag *model.Tag
 		if ret.Parent != nil {
 			parentTag = &model.Tag{
-				ID:     model.KeyTag.ToExternalID(ret.Parent.ID),
+				ID:     model.IDTypeTag.ToExternalID(ret.Parent.ID),
 				Parent: nil,
 				Name:   ret.Parent.Name,
 			}
 		}
 		return &model.Tag{
-			ID:     model.KeyTag.ToExternalID(ret.ID),
+			ID:     model.IDTypeTag.ToExternalID(ret.ID),
 			Parent: parentTag,
 			Name:   ret.Name,
 		}, nil
-	case model.KeyMeta:
+	case model.IDTypeMeta:
 		ret, err := r.MetaUseCase.FetchKeyByID(ctx, uintId)
 		if err != nil {
 			return nil, newGraphqlError("", err)
 		}
 		return &model.MetaKey{
-			ID:   model.KeyMeta.ToExternalID(ret.ID),
+			ID:   model.IDTypeMeta.ToExternalID(ret.ID),
 			Name: ret.Name,
 		}, nil
 	default:

@@ -6,24 +6,25 @@ import (
 	"strings"
 )
 
-type KeyType string
+type IDType string
 
 const (
-	KeyUnknown      KeyType = "Unknown"
-	KeyItemTemplate KeyType = "ItemTemplate:"
-	KeyMeta         KeyType = "Meta:"
-	KeyTag          KeyType = "Tag:"
-	KeyItem         KeyType = "Item:"
+	IDTypeUnknown      IDType = "Unknown"
+	IDTypeItemTemplate IDType = "ItemTemplate:"
+	IDTypeMeta         IDType = "Meta:"
+	IDTypeMetaKey      IDType = "MetaKey:"
+	IDTypeTag          IDType = "Tag:"
+	IDTypeItem         IDType = "Item:"
 )
 
-var keys = []KeyType{KeyItemTemplate, KeyItem, KeyMeta, KeyTag}
+var keys = []IDType{IDTypeItemTemplate, IDTypeItem, IDTypeMeta, IDTypeTag}
 
-func (key KeyType) ToExternalID(ID uint) string {
-	return fmt.Sprintf("%s%v", key, ID)
+func (id IDType) ToExternalID(ID uint) string {
+	return fmt.Sprintf("%s%v", id, ID)
 }
 
-func (key KeyType) ToInternalID(ID string) (uint, error) {
-	noStr := ID[len(key):]
+func (id IDType) ToInternalID(ID string) (uint, error) {
+	noStr := ID[len(id):]
 	no, err := strconv.Atoi(noStr)
 	if err != nil {
 		return 0, fmt.Errorf("parse error:%w", err)
@@ -31,13 +32,13 @@ func (key KeyType) ToInternalID(ID string) (uint, error) {
 	return uint(no), nil
 }
 
-// IDtoKeyNameAndInternalID External ID to Internal ID and KeyType
-func IDtoKeyNameAndInternalID(ID string) (uint, KeyType, error) {
+// IDtoKeyNameAndInternalID External ID to Internal ID and IDType
+func IDtoKeyNameAndInternalID(ID string) (uint, IDType, error) {
 	for _, v := range keys {
 		if strings.HasPrefix(ID, string(v)) {
 			no, err := v.ToInternalID(ID)
 			return no, v, err
 		}
 	}
-	return 0, KeyUnknown, fmt.Errorf("ID type not found")
+	return 0, IDTypeUnknown, fmt.Errorf("ID type not found")
 }

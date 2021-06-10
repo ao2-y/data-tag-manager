@@ -12,7 +12,7 @@ import (
 func (r *mutationResolver) AddItemTemplate(ctx context.Context, input *model.AddItemTemplateInput) (*model.AddItemTemplatePayload, error) {
 	uintMetaKeyIDs := make([]*uint, len(input.MetaKeyIds))
 	for i, v := range input.MetaKeyIds {
-		id, err := model.KeyMeta.ToInternalID(v)
+		id, err := model.IDTypeMeta.ToInternalID(v)
 		if err != nil {
 			return nil, fmt.Errorf("invalid MetaKeyID,:%w", err)
 		}
@@ -30,7 +30,7 @@ func (r *mutationResolver) AddItemTemplate(ctx context.Context, input *model.Add
 }
 
 func (r *mutationResolver) UpdateItemTemplateName(ctx context.Context, input *model.UpdateItemTemplateNameInput) (*model.UpdateItemTemplatePayload, error) {
-	uintId, err := model.KeyItemTemplate.ToInternalID(input.ItemTemplateID)
+	uintId, err := model.IDTypeItemTemplate.ToInternalID(input.ItemTemplateID)
 	if err != nil {
 		return nil, newGraphqlError("ID format error", err)
 	}
@@ -46,13 +46,13 @@ func (r *mutationResolver) UpdateItemTemplateName(ctx context.Context, input *mo
 }
 
 func (r *mutationResolver) UpdateItemTemplateMetaKeys(ctx context.Context, input *model.UpdateItemTemplateMetaKeysInput) (*model.UpdateItemTemplatePayload, error) {
-	uintId, err := model.KeyItemTemplate.ToInternalID(input.ItemTemplateID)
+	uintId, err := model.IDTypeItemTemplate.ToInternalID(input.ItemTemplateID)
 	if err != nil {
 		return nil, newGraphqlError("ID format error", err)
 	}
 	uintMetaKeyIDs := make([]*uint, len(input.MetaKeyIds), len(input.MetaKeyIds))
 	for i, v := range input.MetaKeyIds {
-		uid, err := model.KeyMeta.ToInternalID(v)
+		uid, err := model.IDTypeMeta.ToInternalID(v)
 		if err != nil {
 			return nil, newGraphqlError("ID format error", err)
 		}
@@ -66,7 +66,7 @@ func (r *mutationResolver) UpdateItemTemplateMetaKeys(ctx context.Context, input
 }
 
 func (r *mutationResolver) RemoveItemTemplate(ctx context.Context, input *model.RemoveItemTemplateInput) (*model.RemoveItemTemplatePayload, error) {
-	uintID, err := model.KeyItemTemplate.ToInternalID(input.ItemTemplateID)
+	uintID, err := model.IDTypeItemTemplate.ToInternalID(input.ItemTemplateID)
 	if err != nil {
 		return nil, newGraphqlError("ID format error", err)
 	}

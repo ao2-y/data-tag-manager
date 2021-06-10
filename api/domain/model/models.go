@@ -9,8 +9,8 @@ type (
 		ID          uint
 		Name        string
 		Description *string
-		Tags        []Tag
-		Metas       []Meta
+		Tags        []*Tag
+		Metas       []*Meta
 	}
 	// Tag タグは親子関係のみ持てる
 	Tag struct {
@@ -28,6 +28,7 @@ type (
 		ID        uint
 		MetaKeyID uint
 		Value     string
+		MetaKey   MetaKey
 	}
 	// MetaKey Meta属性名
 	MetaKey struct {
