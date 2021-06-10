@@ -22,23 +22,10 @@ func (r *mutationResolver) AddItemTemplate(ctx context.Context, input *model.Add
 	if err != nil {
 		return nil, fmt.Errorf("ItemTemplate Create Failed :%w", err)
 	}
-	metaKeys := make([]*model.MetaKey, 0, len(itemTemplate.MetaKeys))
-	for i, v := range itemTemplate.MetaKeys {
-		metaKey := &model.MetaKey{
-			ID:   model.KeyMeta.ToExternalID(v.ID),
-			Name: v.Name,
-		}
-		metaKeys[i] = metaKey
-	}
-	retItemTemplate := &model.ItemTemplate{
-		ID:       model.KeyItemTemplate.ToExternalID(itemTemplate.ID),
-		Name:     itemTemplate.Name,
-		MetaKeys: metaKeys,
-	}
 
 	return &model.AddItemTemplatePayload{
 		ClientMutationID: input.ClientMutationID,
-		ItemTemplate:     retItemTemplate,
+		ItemTemplate:     model.NewItemTemplate(itemTemplate),
 	}, nil
 }
 
@@ -51,31 +38,47 @@ func (r *mutationResolver) UpdateItemTemplateName(ctx context.Context, input *mo
 	if err != nil {
 		return nil, newGraphqlError("UpdateName failed", err)
 	}
-	metaKeys := make([]*model.MetaKey, len(ret.MetaKeys), len(ret.MetaKeys))
-	for i, v := range ret.MetaKeys {
-		metaKey := &model.MetaKey{
-			ID:   model.KeyMeta.ToExternalID(v.ID),
-			Name: v.Name,
-		}
-		metaKeys[i] = metaKey
-	}
-	retItemTemplate := &model.ItemTemplate{
-		ID:       model.KeyItemTemplate.ToExternalID(ret.ID),
-		Name:     ret.Name,
-		MetaKeys: metaKeys,
-	}
+
 	return &model.UpdateItemTemplatePayload{
 		ClientMutationID: input.ClientMutationID,
-		ItemTemplate:     retItemTemplate,
+		ItemTemplate:     model.NewItemTemplate(ret),
 	}, nil
 }
 
 func (r *mutationResolver) UpdateItemTemplateMetaKeys(ctx context.Context, input *model.UpdateItemTemplateMetaKeysInput) (*model.UpdateItemTemplatePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	uintId, err := model.KeyItemTemplate.ToInternalID(input.ItemTemplateID)
+	if err != nil {
+		return nil, newGraphqlError("ID format error", err)
+	}
+	uintMetaKeyIDs := make([]*uint, len(input.MetaKeyIds), len(input.MetaKeyIds))
+	for i, v := range input.MetaKeyIds {
+		uid, err := model.KeyMeta.ToInternalID(v)
+		if err != nil {
+			return nil, newGraphqlError("ID format error", err)
+		}
+		uintMetaKeyIDs[i] = &uid
+	}
+	ret, err := r.ItemTemplate.UpdateMetaKeys(ctx, uintId, uintMetaKeyIDs)
+	return &model.UpdateItemTemplatePayload{
+		ClientMutationID: input.ClientMutationID,
+		ItemTemplate:     model.NewItemTemplate(ret),
+	}, nil
 }
 
 func (r *mutationResolver) RemoveItemTemplate(ctx context.Context, input *model.RemoveItemTemplateInput) (*model.RemoveItemTemplatePayload, error) {
-	panic(fmt.Errorf("not implemented"))
+	uintID, err := model.KeyItemTemplate.ToInternalID(input.ItemTemplateID)
+	if err != nil {
+		return nil, newGraphqlError("ID format error", err)
+	}
+	it, err := r.ItemTemplate.Remove(ctx, uintID)
+	if err != nil {
+		return nil, newGraphqlError("RemoveItemTemplate failed.", err)
+	}
+
+	return &model.RemoveItemTemplatePayload{
+		ClientMutationID: input.ClientMutationID,
+		ItemTemplate:     model.NewItemTemplate(it),
+	}, nil
 }
 
 func (r *queryResolver) ItemTemplates(ctx context.Context) ([]*model.ItemTemplate, error) {
@@ -83,20 +86,6 @@ func (r *queryResolver) ItemTemplates(ctx context.Context) ([]*model.ItemTemplat
 	if err != nil {
 		return nil, newGraphqlError("ItemTemplates failed", err)
 	}
-	ret := make([]*model.ItemTemplate, len(its), len(its))
-	for i, v := range its {
-		metaKeys := make([]*model.MetaKey, len(v.MetaKeys), len(v.MetaKeys))
-		for i2, v2 := range v.MetaKeys {
-			metaKeys[i2] = &model.MetaKey{
-				ID:   model.KeyMeta.ToExternalID(v2.ID),
-				Name: v2.Name,
-			}
-		}
-		ret[i] = &model.ItemTemplate{
-			ID:       model.KeyItemTemplate.ToExternalID(v.ID),
-			Name:     v.Name,
-			MetaKeys: metaKeys,
-		}
-	}
-	return ret, nil
+
+	return model.NewItemTemplates(its), nil
 }
