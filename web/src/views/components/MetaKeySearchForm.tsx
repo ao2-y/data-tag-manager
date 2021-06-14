@@ -1,18 +1,10 @@
 import React, { useState } from 'react';
-import {
-  CCard,
-  CCardBody,
-  CFormGroup,
-  CForm,
-  CCol,
-  CInput,
-  CRow,
-} from '@coreui/react';
+import { CCard, CCardBody, CFormGroup, CForm, CCol, CInput, CRow } from '@coreui/react';
 import { MetaKey } from '../../domain/model';
 
 interface OwnProps {
   name?: string;
-  onChange: (value: MetaKey[]) => void;
+  onNameChange: (name: string) => void;
 }
 type ComponentProps = OwnProps;
 
@@ -26,9 +18,7 @@ const Component: React.FC<ComponentProps> = (props) => {
             <h4 id="traffic" className="card-title mb-0">
               Search Condition
             </h4>
-            <div className="small text-muted">
-              Please enter search conditions
-            </div>
+            <div className="small text-muted">Please enter search conditions</div>
           </CCol>
         </CRow>
         <CRow className="mt-2">
@@ -44,6 +34,7 @@ const Component: React.FC<ComponentProps> = (props) => {
                       placeholder="Please entry name..."
                       onChange={(e) => {
                         setNameValue((e.target as HTMLInputElement).value);
+                        props.onNameChange((e.target as HTMLInputElement).value);
                       }}
                     />
                   </div>

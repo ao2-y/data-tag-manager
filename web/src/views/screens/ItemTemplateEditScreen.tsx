@@ -8,13 +8,11 @@ import Loading from '../components/Loading';
 interface OwnProps {
   match: { params: { id: string } };
 }
-type ItemTemplateEditProps = OwnProps &
-  ItemTemplateEditState &
-  ItemTemplateEditActions;
+type ItemTemplateEditProps = OwnProps & ItemTemplateEditState & ItemTemplateEditActions;
 
 const ItemTemplateEditScreen: React.FC<ItemTemplateEditProps> = (props) => {
   useEffect(() => {
-    props.fetch(Number(props.match.params.id));
+    props.fetch(Number(props.match?.params.id));
   }, [true]);
   if (props.itemTemplate) {
     const updateItem = (value: ItemTemplate) => {

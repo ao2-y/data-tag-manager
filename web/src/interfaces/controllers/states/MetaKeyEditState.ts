@@ -15,7 +15,7 @@ const initialState: MetaKeyEditState = {
 export const metaKeyEditReducer = reducerWithInitialState(initialState)
   // Fetch
   .case(metaKeyActions.startFetch, (state) => {
-    return Object.assign({}, state, { isLoading: true });
+    return Object.assign({}, state, { isLoading: true, metaKey: undefined });
   })
   .case(metaKeyActions.failedFetch, (state, { error }) => {
     return Object.assign({}, state, {

@@ -1,6 +1,5 @@
-
 export interface ItemMeta {
   id: number;
-  metaKeyId: number;
+  metaKeyId: string;
   value: string;
 }

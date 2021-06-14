@@ -1,29 +1,19 @@
 import React, { useState } from 'react';
-import {
-  CFormGroup,
-  CCol,
-  CInput,
-  CForm,
-  CButton,
-  CCard,
-  CCardBody,
-  CCardHeader,
-} from '@coreui/react';
-import CIcon from '@coreui/icons-react';
-import { MetaKey } from '../../domain/model';
+import { CFormGroup, CCol, CInput, CForm, CCard, CCardBody, CCardHeader } from '@coreui/react';
 
 interface ComponentProps {
-  metaKey: MetaKey;
-  onSave: (metaKey: MetaKey) => void;
+  name: string;
+  onChange: (changes: { [key: string]: string }) => void;
 }
 
 export const MetaKeyForm: React.FC<ComponentProps> = (props) => {
-  const [metaKey, setMetaKey] = useState<MetaKey>(props.metaKey);
-  const updateString = (value: string, key: string) => {
-    const target = JSON.parse(JSON.stringify(metaKey));
-    target[key] = value;
-    setMetaKey(target);
+  const [name, setName] = useState(props.name);
+
+  const updateString = (key: string, value: string, callback: (key: string) => void) => {
+    callback(value);
+    props.onChange({ [key]: value });
   };
+
   return (
     <CForm>
       <CCard>
@@ -35,24 +25,15 @@ export const MetaKeyForm: React.FC<ComponentProps> = (props) => {
                 <small className="d-block">Name</small>
                 <CInput
                   type="text"
-                  value={metaKey.name}
+                  value={name}
                   placeholder="Please entry name..."
-                  onChange={(e) => {
-                    updateString((e.target as HTMLInputElement).value, 'name');
-                  }}
+                  onChange={(e) => updateString('name', (e.target as HTMLInputElement).value, setName)}
                 />
               </div>
             </CCol>
           </CFormGroup>
         </CCardBody>
       </CCard>
-      <CButton
-        type="button"
-        size="sm"
-        color="success"
-        onClick={() => console.log(name)}>
-        <CIcon name="cil-scrubber" /> Submit
-      </CButton>
     </CForm>
   );
 };

@@ -7,7 +7,7 @@ import { MetaKeyUsecase } from '../../usecase/MetaKeyUsecase';
 import screen from '../screens/MetaKeysScreen';
 
 export interface MetaKeysActions {
-  search: () => void;
+  search: (keyword?: string) => void;
 }
 
 // このクラスをinterfaceに移設するか、Controllerでやるか検討する
@@ -15,10 +15,10 @@ const usecase = container.resolve(MetaKeyUsecase);
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
-    search() {
+    search(keyword?: string) {
       dispatch(metaKeyActions.startSearch({}));
       usecase
-        .find()
+        .find({ keyword })
         .then((result) => {
           dispatch(metaKeyActions.doneSearch({ params: {}, result }));
         })

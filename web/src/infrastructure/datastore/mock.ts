@@ -2,18 +2,18 @@ import { MetaKey, ItemTemplate, Item, Tag } from '../../domain/model';
 
 export const META_KEY_DATA: MetaKey[] = [
   {
-    id: 1,
+    id: `ID:1`,
     name: 'MetaKey1',
   },
   {
-    id: 2,
+    id: `ID:2`,
     name: 'MetaKey2',
   },
   {
-    id: 3,
+    id: `ID:3`,
     name: 'MetaKey3',
   },
-];
+].map((v) => new MetaKey(v.id, v.name));
 
 export const TAG_DATA: Tag[] = [
   {

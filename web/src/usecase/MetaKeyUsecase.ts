@@ -4,28 +4,26 @@ import { MetaKeyRepository } from '../domain/repository';
 
 @injectable()
 export class MetaKeyUsecase {
-  constructor(
-    @inject('MetaKeyRepository') private metaKeyRepository: MetaKeyRepository
-  ) {}
+  constructor(@inject('MetaKeyRepository') private metaKeyRepository: MetaKeyRepository) {}
 
-  find(param?: { keyword: string; excludes?: string[] }) {
+  find(param: { keyword?: string; excludes?: string[] } = {}) {
     return this.metaKeyRepository.find(param);
   }
 
-  fetch(id: number) {
+  fetch(id: string) {
     return this.metaKeyRepository.fetchById(id);
   }
 
   create(item: MetaKey) {
-    return Promise.resolve<MetaKey>(item);
+    return this.metaKeyRepository.create(item);
   }
 
   update(item: MetaKey) {
-    return Promise.resolve<MetaKey>(item);
+    return this.metaKeyRepository.update(item);
   }
 
   fetchInitData() {
-    return Promise.resolve({ id: 0, name: '' } as MetaKey);
+    return Promise.resolve({ id: '', name: '' } as MetaKey);
   }
 
   validate() {}

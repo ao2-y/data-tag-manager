@@ -22,17 +22,14 @@ const makeBody = (object: {}) => {
         <CFormGroup row key={`item-meta-item${value.id}`}>
           <CCol>
             <small className="d-block">
-              <MetaKeyLabel metaKeyId={value.id} />
+              <MetaKeyLabel metaKeyId={value.metaKeyId} />
             </small>
             <div>{value.value}</div>
           </CCol>
         </CFormGroup>
       ))}
       {item.tags?.map((value) => (
-        <CBadge
-          key={`item-tag-item${value.id}`}
-          color="secondary"
-          className="mr-1">
+        <CBadge key={`item-tag-item${value.id}`} color="secondary" className="mr-1">
           {` ${value.tag.name} `}
         </CBadge>
       ))}
@@ -41,33 +38,29 @@ const makeBody = (object: {}) => {
 };
 
 interface ReadComponentProps extends ComponentProps {}
-export const ItemReadComponent = React.memo(
-  (props: React.PropsWithChildren<ReadComponentProps>) => {
-    return (
-      <DataCollection
-        datasource={props.items}
-        isLoading={props.isLoading}
-        makeHeader={makeHeader}
-        makeBody={makeBody}
-        makeEditLink={(item) => `/items/${(item as Item).id}`}></DataCollection>
-    );
-  }
-);
+export const ItemReadComponent = React.memo((props: React.PropsWithChildren<ReadComponentProps>) => {
+  return (
+    <DataCollection
+      datasource={props.items}
+      isLoading={props.isLoading}
+      makeHeader={makeHeader}
+      makeBody={makeBody}
+      makeEditLink={(item) => `/items/${(item as Item).id}`}></DataCollection>
+  );
+});
 
 interface SelectComponentProps extends ComponentProps {
   onSelect: (item: Item) => void;
 }
-export const ItemSelectComponent = React.memo(
-  (props: React.PropsWithChildren<SelectComponentProps>) => {
-    return (
-      <DataCollection
-        datasource={props.items}
-        isLoading={props.isLoading}
-        makeHeader={makeHeader}
-        makeBody={makeBody}
-        onSelect={(item) => {
-          props.onSelect(item[0] as Item);
-        }}></DataCollection>
-    );
-  }
-);
+export const ItemSelectComponent = React.memo((props: React.PropsWithChildren<SelectComponentProps>) => {
+  return (
+    <DataCollection
+      datasource={props.items}
+      isLoading={props.isLoading}
+      makeHeader={makeHeader}
+      makeBody={makeBody}
+      onSelect={(item) => {
+        props.onSelect(item[0] as Item);
+      }}></DataCollection>
+  );
+});

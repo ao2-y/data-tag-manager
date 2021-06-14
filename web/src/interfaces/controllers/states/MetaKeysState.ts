@@ -5,7 +5,6 @@ import { metaKeyActions } from '../actions';
 export interface MetaKeysState {
   metaKeys: MetaKey[];
   isLoading: boolean;
-  message?: string;
 }
 
 const initialState: MetaKeysState = {
@@ -18,10 +17,7 @@ export const metaKeysReducer = reducerWithInitialState(initialState)
     return Object.assign({}, state, { isLoading: true });
   })
   .case(metaKeyActions.failedSearch, (state, { error }) => {
-    return Object.assign({}, state, {
-      isLoading: false,
-      message: error.message,
-    });
+    return Object.assign({}, state, { isLoading: false, searchResultMessage: error.message });
   })
   .case(metaKeyActions.doneSearch, (state, { result }) => {
     return Object.assign({}, state, { isLoading: false, metaKeys: result });

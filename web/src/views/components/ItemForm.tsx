@@ -29,7 +29,7 @@ export const ItemForm: React.FC<ComponentProps> = (props) => {
     target[key] = value;
     setItem(target);
   };
-  const updateMetaKey = (value: string, metaKeyId: number) => {
+  const updateMetaKey = (value: string, metaKeyId: string) => {
     const target = JSON.parse(JSON.stringify(item)) as Item;
     const meta = target.metaDatas?.find((v) => v.metaKeyId);
     if (meta) {
@@ -71,10 +71,7 @@ export const ItemForm: React.FC<ComponentProps> = (props) => {
                   value={item.description}
                   placeholder="Please entry description..."
                   onChange={(e) => {
-                    updateString(
-                      (e.target as HTMLTextAreaElement).value,
-                      'description'
-                    );
+                    updateString((e.target as HTMLTextAreaElement).value, 'description');
                   }}
                 />
               </div>
@@ -106,10 +103,7 @@ export const ItemForm: React.FC<ComponentProps> = (props) => {
                       value={meta.value}
                       placeholder="Please entry name..."
                       onChange={(e) => {
-                        updateMetaKey(
-                          (e.target as HTMLInputElement).value,
-                          meta.metaKeyId
-                        );
+                        updateMetaKey((e.target as HTMLInputElement).value, meta.metaKeyId);
                       }}
                     />
                     <CInputGroupAppend>
@@ -122,21 +116,13 @@ export const ItemForm: React.FC<ComponentProps> = (props) => {
               </CCol>
             </CFormGroup>
           ))}
-          <CButton
-            type="button"
-            size="sm"
-            color="info"
-            onClick={() => console.log(name)}>
+          <CButton type="button" size="sm" color="info" onClick={() => console.log()}>
             <CIcon name="cil-plus" /> Add
           </CButton>
         </CCardBody>
       </CCard>
 
-      <CButton
-        type="button"
-        size="sm"
-        color="success"
-        onClick={() => console.log(name)}>
+      <CButton type="button" size="sm" color="success" onClick={() => console.log()}>
         <CIcon name="cil-scrubber" /> Submit
       </CButton>
     </CForm>

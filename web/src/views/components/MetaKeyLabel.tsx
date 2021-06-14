@@ -4,20 +4,20 @@ import { MetaKey } from '../../domain/model';
 import { MetaKeyUsecase } from '../../usecase/MetaKeyUsecase';
 
 interface OwnProps {
-  metaKeyId: number;
+  metaKeyId: string;
   metaKey?: MetaKey;
 }
 
 type ComponentProps = OwnProps;
 
-const usecase = container.resolve(MetaKeyUsecase)
+const usecase = container.resolve(MetaKeyUsecase);
 
 const Component: React.FC<ComponentProps> = (props) => {
   const [metaKey, setMetaKeyValue] = useState<MetaKey>();
-  useEffect(() => { usecase.fetch(props.metaKeyId).then(setMetaKeyValue).then(console.log); }, []);
-  return (
-    <span>{metaKey?.name || 'Loading...'}</span>
-  );
+  useEffect(() => {
+    usecase.fetch(props.metaKeyId).then(setMetaKeyValue).then(console.log);
+  }, []);
+  return <span>{metaKey?.name || 'Loading...'}</span>;
 };
 
 export default Component;
