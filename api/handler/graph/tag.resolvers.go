@@ -18,7 +18,7 @@ func (r *mutationResolver) AddTag(ctx context.Context, input *model.AddTagInput)
 			return nil, newGraphqlError("AddTag ParentID validation failed.", err)
 		}
 	}
-	useCaseRet, err := r.TagUseCase.Create(ctx, input.Name, parentID)
+	useCaseRet, err := r.TagUseCase.Create(ctx, input.Name, input.Color, parentID)
 	if err != nil {
 		return nil, newGraphqlError("AddTag operation failed", err)
 	}
@@ -75,6 +75,10 @@ func (r *mutationResolver) RemoveTag(ctx context.Context, input *model.RemoveTag
 			Name:   useCaseRet.Name,
 		},
 	}, nil
+}
+
+func (r *mutationResolver) UpdateTag(ctx context.Context, input *model.UpdateTagInput) (*model.AddTagPaylod, error) {
+	panic(fmt.Errorf("not implemented"))
 }
 
 func (r *mutationResolver) AddTagToItem(ctx context.Context, input *model.AddTagToItemInput) (*model.AddTagToItemPayload, error) {

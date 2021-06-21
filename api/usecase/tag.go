@@ -8,7 +8,7 @@ import (
 )
 
 type Tag interface {
-	Create(ctx context.Context, name string, parentID uint) (*model.Tag, error)
+	Create(ctx context.Context, name string, color string, parentID uint) (*model.Tag, error)
 	Remove(ctx context.Context, ID uint) (*model.Tag, error)
 	GetAll(ctx context.Context) ([]*model.Tag, error)
 	GetByID(ctx context.Context, ID uint) (*model.Tag, error)
@@ -49,7 +49,7 @@ func (t *tagUseCase) GetByIDWithParent(ctx context.Context, ID uint) (*model.Tag
 	}, nil
 }
 
-func (t *tagUseCase) Create(ctx context.Context, name string, parentID uint) (*model.Tag, error) {
+func (t *tagUseCase) Create(ctx context.Context, name string, color string, parentID uint) (*model.Tag, error) {
 
 	if parentID > 0 {
 		// Parentの生存確認
@@ -82,7 +82,7 @@ func (t *tagUseCase) Create(ctx context.Context, name string, parentID uint) (*m
 		return nil, NewValidationError(ValidationTypeDuplicated, "name", name, nil)
 	}
 
-	tag, err := t.repository.Create(ctx, name, parentID)
+	tag, err := t.repository.Create(ctx, name, color, parentID)
 	if err != nil {
 		var opeError *repository.OperationError
 		if errors.As(err, opeError) {

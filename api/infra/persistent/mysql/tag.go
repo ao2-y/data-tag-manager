@@ -16,7 +16,11 @@ type tagRepository struct {
 	cache inmemory.Cache
 }
 
-func (t *tagRepository) Create(ctx context.Context, name string, parentID uint) (*model.Tag, error) {
+func (t *tagRepository) Update(ctx context.Context, ID uint, name string, color string, parendID uint) (*model.Tag, error) {
+	panic("implement me")
+}
+
+func (t *tagRepository) Create(ctx context.Context, name string, color string, parentID uint) (*model.Tag, error) {
 	tag := &Tags{
 		Name:        name,
 		ParentTagID: parentID,

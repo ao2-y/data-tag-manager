@@ -77,6 +77,7 @@ type AddTagInput struct {
 	ClientMutationID *string `json:"clientMutationId"`
 	ParentID         *string `json:"parentId"`
 	Name             string  `json:"name"`
+	Color            string  `json:"color"`
 }
 
 type AddTagPaylod struct {
@@ -218,6 +219,7 @@ type Tag struct {
 	ID     string `json:"id"`
 	Parent *Tag   `json:"parent"`
 	Name   string `json:"name"`
+	Color  string `json:"color"`
 }
 
 func (Tag) IsNode() {}
@@ -248,6 +250,13 @@ type UpdateMetaKeyInput struct {
 type UpdateMetaKeyPayload struct {
 	ClientMutationID *string  `json:"clientMutationId"`
 	MetaKey          *MetaKey `json:"metaKey"`
+}
+
+type UpdateTagInput struct {
+	ClientMutationID *string `json:"clientMutationId"`
+	ID               string  `json:"id"`
+	Name             string  `json:"name"`
+	Color            string  `json:"color"`
 }
 
 type Error string

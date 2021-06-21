@@ -126,6 +126,7 @@ type ComplexityRoot struct {
 		UpdateItemTemplateMetaKeys func(childComplexity int, input *model.UpdateItemTemplateMetaKeysInput) int
 		UpdateItemTemplateName     func(childComplexity int, input *model.UpdateItemTemplateNameInput) int
 		UpdateMetaKey              func(childComplexity int, input *model.UpdateMetaKeyInput) int
+		UpdateTag                  func(childComplexity int, input *model.UpdateTagInput) int
 	}
 
 	NoopPayload struct {
@@ -178,6 +179,7 @@ type ComplexityRoot struct {
 	}
 
 	Tag struct {
+		Color  func(childComplexity int) int
 		ID     func(childComplexity int) int
 		Name   func(childComplexity int) int
 		Parent func(childComplexity int) int
@@ -210,6 +212,7 @@ type MutationResolver interface {
 	RemoveMetaToItem(ctx context.Context, input *model.RemoveMetaToItemInput) (*model.RemoveMetaToItemPayload, error)
 	AddTag(ctx context.Context, input *model.AddTagInput) (*model.AddTagPaylod, error)
 	RemoveTag(ctx context.Context, input *model.RemoveTagInput) (*model.RemoveTagPayload, error)
+	UpdateTag(ctx context.Context, input *model.UpdateTagInput) (*model.AddTagPaylod, error)
 	AddTagToItem(ctx context.Context, input *model.AddTagToItemInput) (*model.AddTagToItemPayload, error)
 	RemoveTagToItem(ctx context.Context, input *model.RemoveTagToItemInput) (*model.RemoveTagToItemPayload, error)
 }
@@ -643,6 +646,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateMetaKey(childComplexity, args["input"].(*model.UpdateMetaKeyInput)), true
 
+	case "Mutation.updateTag":
+		if e.complexity.Mutation.UpdateTag == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTag_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTag(childComplexity, args["input"].(*model.UpdateTagInput)), true
+
 	case "NoopPayload.clientMutationId":
 		if e.complexity.NoopPayload.ClientMutationID == nil {
 			break
@@ -806,6 +821,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.RemoveTagToItemPayload.Item(childComplexity), true
+
+	case "Tag.color":
+		if e.complexity.Tag.Color == nil {
+			break
+		}
+
+		return e.complexity.Tag.Color(childComplexity), true
 
 	case "Tag.id":
 		if e.complexity.Tag.ID == nil {
@@ -1172,6 +1194,7 @@ type RemoveMetaToItemPayload {
     id: ID!
     parent: Tag
     name: String!
+    color: String!
 }
 
 extend type Query {
@@ -1182,6 +1205,7 @@ extend type Mutation {
     # タグ自体の操作
     addTag(input:AddTagInput):AddTagPaylod
     removeTag(input:RemoveTagInput):RemoveTagPayload
+    updateTag(input:UpdateTagInput):AddTagPaylod
     # Itemへの操作
     addTagToItem(input:AddTagToItemInput):AddTagToItemPayload
     removeTagToItem(input:RemoveTagToItemInput):RemoveTagToItemPayload
@@ -1191,11 +1215,19 @@ input AddTagInput {
     clientMutationId: String
     parentId: ID
     name: String!
+    color: String!
 }
 
 type AddTagPaylod {
     clientMutationId: String
     tag: Tag
+}
+
+input UpdateTagInput {
+    clientMutationId: String
+    id: ID!
+    name: String!
+    color: String!
 }
 
 input RemoveTagInput {
@@ -1483,6 +1515,21 @@ func (ec *executionContext) field_Mutation_updateMetaKey_args(ctx context.Contex
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalOUpdateMetaKeyInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐUpdateMetaKeyInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateTag_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.UpdateTagInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalOUpdateTagInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐUpdateTagInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3141,6 +3188,45 @@ func (ec *executionContext) _Mutation_removeTag(ctx context.Context, field graph
 	return ec.marshalORemoveTagPayload2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐRemoveTagPayload(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_updateTag(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateTag_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateTag(rctx, args["input"].(*model.UpdateTagInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.AddTagPaylod)
+	fc.Result = res
+	return ec.marshalOAddTagPaylod2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐAddTagPaylod(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_addTagToItem(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4100,6 +4186,41 @@ func (ec *executionContext) _Tag_name(ctx context.Context, field graphql.Collect
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Tag_color(ctx context.Context, field graphql.CollectedField, obj *model.Tag) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Tag",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Color, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5605,6 +5726,14 @@ func (ec *executionContext) unmarshalInputAddTagInput(ctx context.Context, obj i
 			if err != nil {
 				return it, err
 			}
+		case "color":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("color"))
+			it.Color, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -5942,6 +6071,50 @@ func (ec *executionContext) unmarshalInputUpdateMetaKeyInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateTagInput(ctx context.Context, obj interface{}) (model.UpdateTagInput, error) {
+	var it model.UpdateTagInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "clientMutationId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clientMutationId"))
+			it.ClientMutationID, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "color":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("color"))
+			it.Color, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6397,6 +6570,8 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			out.Values[i] = ec._Mutation_addTag(ctx, field)
 		case "removeTag":
 			out.Values[i] = ec._Mutation_removeTag(ctx, field)
+		case "updateTag":
+			out.Values[i] = ec._Mutation_updateTag(ctx, field)
 		case "addTagToItem":
 			out.Values[i] = ec._Mutation_addTagToItem(ctx, field)
 		case "removeTagToItem":
@@ -6733,6 +6908,11 @@ func (ec *executionContext) _Tag(ctx context.Context, sel ast.SelectionSet, obj 
 			out.Values[i] = ec._Tag_parent(ctx, field, obj)
 		case "name":
 			out.Values[i] = ec._Tag_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "color":
+			out.Values[i] = ec._Tag_color(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -7998,6 +8178,14 @@ func (ec *executionContext) marshalOUpdateMetaKeyPayload2ᚖao2ᚑyᚋdataᚑtag
 		return graphql.Null
 	}
 	return ec._UpdateMetaKeyPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOUpdateTagInput2ᚖao2ᚑyᚋdataᚑtagᚑmanagerᚋhandlerᚋgraphᚋmodelᚐUpdateTagInput(ctx context.Context, v interface{}) (*model.UpdateTagInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputUpdateTagInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {
