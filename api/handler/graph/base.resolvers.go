@@ -35,7 +35,7 @@ func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error)
 		metaKeys := make([]*model.MetaKey, len(it.MetaKeys), len(it.MetaKeys))
 		for i, v := range it.MetaKeys {
 			metaKeys[i] = &model.MetaKey{
-				ID:   model.IDTypeMeta.ToExternalID(v.ID),
+				ID:   model.IDTypeItemMeta.ToExternalID(v.ID),
 				Name: v.Name,
 			}
 		}
@@ -64,13 +64,13 @@ func (r *queryResolver) Node(ctx context.Context, id string) (model.Node, error)
 			Parent: parentTag,
 			Name:   ret.Name,
 		}, nil
-	case model.IDTypeMeta:
+	case model.IDTypeItemMeta:
 		ret, err := r.MetaUseCase.FetchKeyByID(ctx, uintId)
 		if err != nil {
 			return nil, newGraphqlError("", err)
 		}
 		return &model.MetaKey{
-			ID:   model.IDTypeMeta.ToExternalID(ret.ID),
+			ID:   model.IDTypeItemMeta.ToExternalID(ret.ID),
 			Name: ret.Name,
 		}, nil
 	default:

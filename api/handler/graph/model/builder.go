@@ -6,7 +6,7 @@ func NewItemTemplate(template *model.ItemTemplate) *ItemTemplate {
 	metaKeys := make([]*MetaKey, len(template.MetaKeys), len(template.MetaKeys))
 	for i, v := range template.MetaKeys {
 		metaKey := &MetaKey{
-			ID:   IDTypeMeta.ToExternalID(v.ID),
+			ID:   IDTypeItemMeta.ToExternalID(v.ID),
 			Name: v.Name,
 		}
 		metaKeys[i] = metaKey
@@ -54,7 +54,7 @@ func NewTagWithParent(tag *model.TagWithParent) *Tag {
 	}
 }
 
-func NewMetas(metas []*model.Meta) []*Meta {
+func NewMetas(metas []*model.ItemMeta) []*Meta {
 	ret := make([]*Meta, len(metas), len(metas))
 	for i, v := range metas {
 		ret[i] = NewMeta(v)
@@ -62,9 +62,9 @@ func NewMetas(metas []*model.Meta) []*Meta {
 	return ret
 }
 
-func NewMeta(meta *model.Meta) *Meta {
+func NewMeta(meta *model.ItemMeta) *Meta {
 	return &Meta{
-		ID:      IDTypeMeta.ToExternalID(meta.ID),
+		ID:      IDTypeItemMeta.ToExternalID(meta.ID),
 		MetaKey: NewMetaKey(&meta.MetaKey),
 		Value:   meta.Value,
 	}

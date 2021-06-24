@@ -17,6 +17,8 @@ const (
 	ValidationTypeUsed
 	// ValidationTypeIsChild 子要素だった
 	ValidationTypeIsChild
+	// ValidationTypeColorCode カラーコード文字列が不正だった
+	ValidationTypeColorCode
 )
 
 type ValidationError struct {

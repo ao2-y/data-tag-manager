@@ -112,7 +112,7 @@ DROP TABLE IF EXISTS `tags`;
 CREATE TABLE `tags` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `parent_tag_id` int(11) NOT NULL,
-  `level` int(11) NOT NULL DEFAULT '1',
+  `color` varchar(7) NOT NULL,
   `name` varchar(4096) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

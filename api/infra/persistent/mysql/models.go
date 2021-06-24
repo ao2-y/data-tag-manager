@@ -27,6 +27,7 @@ type (
 	Tags struct {
 		ID          uint `gorm:"primaryKey"`
 		Name        string
+		Color       string
 		ParentTagID uint
 		//CreatedAt time.Time
 		//UpdatedAt time.Time
@@ -123,6 +124,7 @@ func tagToDomain(tag *Tags) *model.Tag {
 	return &model.Tag{
 		ID:          tag.ID,
 		Name:        tag.Name,
+		Color:       tag.Color,
 		ParentTagID: tag.ParentTagID,
 	}
 }

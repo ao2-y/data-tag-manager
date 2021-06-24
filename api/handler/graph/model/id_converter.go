@@ -11,13 +11,13 @@ type IDType string
 const (
 	IDTypeUnknown      IDType = "Unknown"
 	IDTypeItemTemplate IDType = "ItemTemplate:"
-	IDTypeMeta         IDType = "Meta:"
+	IDTypeItemMeta     IDType = "Meta:"
 	IDTypeMetaKey      IDType = "MetaKey:"
 	IDTypeTag          IDType = "Tag:"
 	IDTypeItem         IDType = "Item:"
 )
 
-var keys = []IDType{IDTypeItemTemplate, IDTypeItem, IDTypeMeta, IDTypeTag}
+var keys = []IDType{IDTypeItemTemplate, IDTypeItem, IDTypeItemMeta, IDTypeTag}
 
 func (id IDType) ToExternalID(ID uint) string {
 	return fmt.Sprintf("%s%v", id, ID)

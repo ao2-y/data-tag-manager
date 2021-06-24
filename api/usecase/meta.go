@@ -28,7 +28,7 @@ func (m *metaUseCase) FetchKeyByID(ctx context.Context, ID uint) (*model.MetaKey
 		var repError *repository.OperationError
 		if errors.As(err, &repError) {
 			if repError.Code == repository.ErrNotFound {
-				return nil, NewResourceNorFoundError("Meta")
+				return nil, NewResourceNorFoundError("ItemMeta")
 			}
 		}
 		return nil, NewInternalServerError("MetaRepository.FetchKeyByID return unknown error.", err)
@@ -52,7 +52,7 @@ func (m *metaUseCase) UpdateKey(ctx context.Context, ID uint, name string) (*mod
 		if errors.As(err, &repError) {
 			switch repError.Code {
 			case repository.ErrNotFound:
-				return nil, NewResourceNorFoundError(fmt.Sprintf("Meta:%v", ID))
+				return nil, NewResourceNorFoundError(fmt.Sprintf("ItemMeta:%v", ID))
 			default:
 				// 何もしない
 			}
@@ -111,7 +111,7 @@ func (m *metaUseCase) RemoveKey(ctx context.Context, ID uint) (*model.MetaKey, e
 		var repoError *repository.OperationError
 		if errors.As(err, &repoError) {
 			if repoError.Code == repository.ErrNotFound {
-				return nil, NewResourceNorFoundError("Meta")
+				return nil, NewResourceNorFoundError("ItemMeta")
 			}
 		}
 		return nil, NewInternalServerError("MetaRepository.FetchByID return unknown error.", err)

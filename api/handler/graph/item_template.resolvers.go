@@ -12,7 +12,7 @@ import (
 func (r *mutationResolver) AddItemTemplate(ctx context.Context, input *model.AddItemTemplateInput) (*model.AddItemTemplatePayload, error) {
 	uintMetaKeyIDs := make([]*uint, len(input.MetaKeyIds))
 	for i, v := range input.MetaKeyIds {
-		id, err := model.IDTypeMeta.ToInternalID(v)
+		id, err := model.IDTypeItemMeta.ToInternalID(v)
 		if err != nil {
 			return nil, fmt.Errorf("invalid MetaKeyID,:%w", err)
 		}
@@ -52,7 +52,7 @@ func (r *mutationResolver) UpdateItemTemplateMetaKeys(ctx context.Context, input
 	}
 	uintMetaKeyIDs := make([]*uint, len(input.MetaKeyIds), len(input.MetaKeyIds))
 	for i, v := range input.MetaKeyIds {
-		uid, err := model.IDTypeMeta.ToInternalID(v)
+		uid, err := model.IDTypeItemMeta.ToInternalID(v)
 		if err != nil {
 			return nil, newGraphqlError("ID format error", err)
 		}

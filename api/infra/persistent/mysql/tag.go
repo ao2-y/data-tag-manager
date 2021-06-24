@@ -16,13 +16,36 @@ type tagRepository struct {
 	cache inmemory.Cache
 }
 
-func (t *tagRepository) Update(ctx context.Context, ID uint, name string, color string, parendID uint) (*model.Tag, error) {
-	panic("implement me")
+func (t *tagRepository) Update(ctx context.Context, ID uint, name string, color string, parentID uint) (*model.Tag, error) {
+	tag := &Tags{
+		ID:          ID,
+		Name:        name,
+		Color:       color,
+		ParentTagID: parentID,
+	}
+	err := t.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {
+		err := tx.WithContext(ctx).Save(tag).Error
+		if err != nil {
+			return repository.NewOperationError(repository.ErrUnknown, err)
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	modelTag := tagToDomain(tag)
+	t.cache.Store(t.cacheKeyID(modelTag.ID), modelTag)
+	t.cache.Store(t.cacheKeyName(modelTag.Name), modelTag)
+	// TODO FIXME ParentIDに関しては同じParentIDを持っている群をキャッシュしているので読みなおし処理必要
+	// 暫定で同じparentIDを持つキャッシュを削除
+	t.cache.Delete(t.cacheKeyParentID(modelTag.ParentTagID))
+	return modelTag, nil
 }
 
 func (t *tagRepository) Create(ctx context.Context, name string, color string, parentID uint) (*model.Tag, error) {
 	tag := &Tags{
 		Name:        name,
+		Color:       color,
 		ParentTagID: parentID,
 	}
 	err := t.db.WithContext(ctx).Transaction(func(tx *gorm.DB) error {

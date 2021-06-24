@@ -5,6 +5,7 @@ import (
 	"ao2-y/data-tag-manager/domain/repository"
 	"context"
 	"errors"
+	"gopkg.in/go-playground/colors.v1"
 )
 
 type Tag interface {
@@ -51,6 +52,11 @@ func (t *tagUseCase) GetByIDWithParent(ctx context.Context, ID uint) (*model.Tag
 
 func (t *tagUseCase) Create(ctx context.Context, name string, color string, parentID uint) (*model.Tag, error) {
 
+	// カラーコードの形式チェック
+	_, err := colors.ParseHEX(color)
+	if err != nil {
+		return nil, NewValidationError(ValidationTypeColorCode, "Color", color, err)
+	}
 	if parentID > 0 {
 		// Parentの生存確認
 		parent, err := t.repository.FetchByID(ctx, parentID)

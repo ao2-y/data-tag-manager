@@ -407,21 +407,21 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ItemTemplate.Name(childComplexity), true
 
-	case "Meta.id":
+	case "ItemMeta.id":
 		if e.complexity.Meta.ID == nil {
 			break
 		}
 
 		return e.complexity.Meta.ID(childComplexity), true
 
-	case "Meta.metaKey":
+	case "ItemMeta.metaKey":
 		if e.complexity.Meta.MetaKey == nil {
 			break
 		}
 
 		return e.complexity.Meta.MetaKey(childComplexity), true
 
-	case "Meta.value":
+	case "ItemMeta.value":
 		if e.complexity.Meta.Value == nil {
 			break
 		}
@@ -991,7 +991,7 @@ enum Error {
     id: ID!
     name: String!
     description:String
-    metas:[Meta]
+    metas:[ItemMeta]
     tags:[Tag]
 }
 
@@ -1116,7 +1116,7 @@ input RemoveItemTemplateInput {
     name:String!
 }
 
-type Meta implements Node {
+type ItemMeta implements Node {
     id: ID!
     metaKey: MetaKey
     value: String!
@@ -2439,7 +2439,7 @@ func (ec *executionContext) _Meta_id(ctx context.Context, field graphql.Collecte
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Meta",
+		Object:     "ItemMeta",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2474,7 +2474,7 @@ func (ec *executionContext) _Meta_metaKey(ctx context.Context, field graphql.Col
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Meta",
+		Object:     "ItemMeta",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -2506,7 +2506,7 @@ func (ec *executionContext) _Meta_value(ctx context.Context, field graphql.Colle
 		}
 	}()
 	fc := &graphql.FieldContext{
-		Object:     "Meta",
+		Object:     "ItemMeta",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -6459,7 +6459,7 @@ func (ec *executionContext) _ItemTemplate(ctx context.Context, sel ast.Selection
 	return out
 }
 
-var metaImplementors = []string{"Meta", "Node"}
+var metaImplementors = []string{"ItemMeta", "Node"}
 
 func (ec *executionContext) _Meta(ctx context.Context, sel ast.SelectionSet, obj *model.Meta) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, metaImplementors)
@@ -6469,7 +6469,7 @@ func (ec *executionContext) _Meta(ctx context.Context, sel ast.SelectionSet, obj
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("Meta")
+			out.Values[i] = graphql.MarshalString("ItemMeta")
 		case "id":
 			out.Values[i] = ec._Meta_id(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
