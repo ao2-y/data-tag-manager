@@ -10,6 +10,7 @@ import (
 
 type Tag interface {
 	Create(ctx context.Context, name string, color string, parentID uint) (*model.Tag, error)
+	Update(ctx context.Context, ID uint, name, color string) (*model.Tag, error)
 	Remove(ctx context.Context, ID uint) (*model.Tag, error)
 	GetAll(ctx context.Context) ([]*model.Tag, error)
 	GetByID(ctx context.Context, ID uint) (*model.Tag, error)
@@ -95,6 +96,32 @@ func (t *tagUseCase) Create(ctx context.Context, name string, color string, pare
 			return nil, NewInternalServerError("Tag create usecase. create failed.", err)
 		}
 		return nil, NewInternalServerError("Tag create failed", err)
+	}
+	return tag, nil
+}
+
+func (t tagUseCase) Update(ctx context.Context, ID uint, name, color string) (*model.Tag, error) {
+	_, err := t.repository.FetchByID(ctx, ID)
+	if err != nil {
+		var opeError *repository.OperationError
+		if errors.As(err, opeError) {
+			switch opeError.Code {
+			case repository.ErrNotFound:
+				return nil, NewResourceNorFoundError("Tag")
+			}
+		}
+		return nil, NewInternalServerError("Tag update usecase. FetchByID failed.", err)
+	}
+	tag, err := t.repository.Update(ctx, ID, name, color)
+	if err != nil {
+		var opeError *repository.OperationError
+		if errors.As(err, opeError) {
+			switch opeError.Code {
+			case repository.ErrNotFound:
+				return nil, NewResourceNorFoundError("Tag")
+			}
+		}
+		return nil, NewInternalServerError("Tag update usecase. Update failed.", err)
 	}
 	return tag, nil
 }

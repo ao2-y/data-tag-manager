@@ -78,7 +78,36 @@ func (r *mutationResolver) RemoveTag(ctx context.Context, input *model.RemoveTag
 }
 
 func (r *mutationResolver) UpdateTag(ctx context.Context, input *model.UpdateTagInput) (*model.AddTagPaylod, error) {
-	panic(fmt.Errorf("not implemented"))
+	innerID, err := model.IDTypeTag.ToInternalID(input.ID)
+	if err != nil {
+		return nil, newGraphqlError("UpdateTag ID validation failed", err)
+	}
+	tag, err := r.TagUseCase.Update(ctx, innerID, input.Name, input.Color)
+	if err != nil {
+		return nil, newGraphqlError("UpdateTag operation failed", err)
+	}
+	var parent *model.Tag
+	if tag.ParentTagID > 0 {
+		if tag.ParentTagID > 0 {
+			parentRet, err := r.TagUseCase.GetByID(ctx, tag.ParentTagID)
+			if err != nil {
+				return nil, newGraphqlError("AddTag get parent failed", err)
+			}
+			parent = &model.Tag{
+				ID:   model.IDTypeTag.ToExternalID(parentRet.ID),
+				Name: parentRet.Name,
+			}
+		}
+	}
+	return &model.AddTagPaylod{
+		ClientMutationID: input.ClientMutationID,
+		Tag: &model.Tag{
+			ID:     model.IDTypeTag.ToExternalID(tag.ID),
+			Parent: parent,
+			Name:   tag.Name,
+			Color:  tag.Color,
+		},
+	}, nil
 }
 
 func (r *mutationResolver) AddTagToItem(ctx context.Context, input *model.AddTagToItemInput) (*model.AddTagToItemPayload, error) {
